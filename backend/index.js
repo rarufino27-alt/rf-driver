@@ -1,13 +1,20 @@
 import express from "express";
 import cors from "cors";
-import fetch from "node-fetch";
+import dotenv from "dotenv";
+import mercadopago from "mercadopago";
+
+dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
-const MP_TOKEN = process.env.MP_ACCESS_TOKEN;
+
+// Configura Mercado Pago
+mercadopago.configure({
+  access_token: process.env.MP_ACCESS_TOKEN
+});
 
 /* ===============================
    ROTA DE TESTE
@@ -49,36 +56,67 @@ app.post("/criar-pagamento", async (req, res) => {
       metadata: {
         deviceId,
         plano
-      },
-      back_urls: {
-        success: "https://SEU_SITE/sucesso.html",
-        failure: "https://SEU_SITE/erro.html",
-        pending: "https://SEU_SITE/pendente.html"
-      },
-      auto_return: "approved"
+      }
     };
 
-    const response = await fetch(
-      "https://api.mercadopago.com/checkout/preferences",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${MP_TOKEN}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(preference)
-      }
-    );
-
-    const data = await response.json();
+    const response = await mercadopago.preferences.create(preference);
 
     return res.json({
-      init_point: data.init_point
+      init_point: response.body.init_point
     });
 
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Erro ao criar pagamento" });
+  }
+});
+
+import fs from "fs";
+
+/* ===============================
+   WEBHOOK MERCADO PAGO
+================================ */
+app.post("/webhook", async (req, res) => {
+  try {
+    const { type, data } = req.body;
+
+    if (type !== "payment") {
+      return res.sendStatus(200);
+    }
+
+    const paymentId = data.id;
+
+    const payment = await mercadopago.payment.findById(paymentId);
+
+    if (payment.body.status !== "approved") {
+      return res.sendStatus(200);
+    }
+
+    const { deviceId, plano } = payment.body.metadata;
+
+    if (!deviceId || !plano) {
+      return res.sendStatus(200);
+    }
+
+    // Lê planos existentes
+    const planosPath = "./planos.json";
+    const planosAtivos = JSON.parse(fs.readFileSync(planosPath));
+
+    planosAtivos[deviceId] = {
+      plano,
+      ativo: true,
+      data: new Date().toISOString()
+    };
+
+    fs.writeFileSync(planosPath, JSON.stringify(planosAtivos, null, 2));
+
+    console.log("Plano ativado:", deviceId, plano);
+
+    res.sendStatus(200);
+
+  } catch (err) {
+    console.error("Erro no webhook:", err);
+    res.sendStatus(500);
   }
 });
 
