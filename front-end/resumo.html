@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Relatórios - RF Driver</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="css/css-theme.css">
+</head>
+
+<body>
+
+<div class="drawer-toggle" onclick="GlobalUI.toggleDrawer()">
+  <i class="fa fa-bars"></i>
+</div>
+
+<div class="theme-toggle" onclick="GlobalTheme.toggle()">
+  <i class="fa fa-moon"></i>
+</div>
+
+<div id="menu-lateral"></div>
+
+<main id="conteudo">
+
+  <section class="card">
+    <h1 style="color:var(--gold)">Relatórios</h1>
+    <p style="opacity:.7">
+      Análises financeiras e desempenho
+    </p>
+  </section>
+
+  <section class="card">
+    <p style="opacity:.85">
+      Relatórios completos de ganhos, despesas, lucro e desempenho
+      estarão disponíveis para planos ativos.
+    </p>
+    <p style="opacity:.6;margin-top:8px">
+      Em breve: gráficos mensais, comparativos e insights automáticos.
+    </p>
+  </section>
+
+</main>
+
+<div id="menu-inferior"></div>
+
+<script src="js/js-dataManager.js"></script>
+<script src="js/js-global.js"></script>
+<script src="js/PlanoManager.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  GlobalUI.loadComponent("menu-lateral","components/components-menu-lateral.html");
+  GlobalUI.loadComponent("menu-inferior","components/components-menu-inferior.html");
+
+  // 🔒 BLOQUEIO FREEMIUM
+  if(PlanoManager.isBloqueado("relatorios")){
+    PlanoManager.redirecionarUpgrade();
+    return;
+  }
+});
+</script>
+
+</body>
+</html>
