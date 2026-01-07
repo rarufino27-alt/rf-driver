@@ -209,7 +209,7 @@ td{padding:10px;border-bottom:1px solid var(--border)}
 <script src="js/js-global.js"></script>
 
 <script>
-  (function(){
+(function(){
   document.body.dataset.theme = localStorage.getItem("tema") || "dark";
 })();
 
@@ -221,138 +221,110 @@ function toggleTheme(){
 function toggleDrawer(){
   document.getElementById("drawer").classList.toggle("open");
 }
-  
-document.addEventListener("DOMContentLoaded", () => {
 
-  let dados = JSON.parse(localStorage.getItem("rf_caixa")) || {
-    entradas: [],
-    saidas: []
-  };
+/* DADOS */
+let dados = JSON.parse(localStorage.getItem("rf_caixa")) || {entradas:[],saidas:[]};
 
-  const grafico = new Chart(
-    document.getElementById("grafico"),{
-      type:"bar",
-      data:{
-        labels:["Entradas","Saídas"],
-        datasets:[{
-          data:[0,0],
-          backgroundColor:["#1DB954","#ff3b30"]
-        }]
-      },
-      options:{
-        plugins:{legend:{display:false}},
-        scales:{y:{beginAtZero:true}}
-      }
-    }
-  );
-
-  function atualizar(){
-    const ent = dados.entradas.reduce((s,i)=>s + Number(i.valor||0),0);
-    const sai = dados.saidas.reduce((s,i)=>s + Number(i.valor||0),0);
-
-    resEntradas.innerText = ent.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-    resSaidas.innerText   = sai.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-    resSaldo.innerText    = (ent - sai).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-
-    grafico.data.datasets[0].data = [ent,sai];
-    grafico.update();
-
-    localStorage.setItem("rf_caixa",JSON.stringify(dados));
-    localStorage.setItem("rf_caixa_total_entradas",ent);
-    localStorage.setItem("rf_caixa_total_saidas",sai);
-  }
-
-  function render(){
-    listaCorridas.innerHTML = dados.entradas.map((e,i)=>`
-      <tr>
-        <td>${e.desc}</td>
-        <td>${e.valor.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</td>
-        <td class="del" onclick="del('entradas',${i})">✕</td>
-      </tr>
-    `).join("");
-
-    listaSaidas.innerHTML = dados.saidas.map((e,i)=>`
-      <tr>
-        <td>${e.desc}</td>
-        <td>${e.valor.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</td>
-        <td class="del" onclick="del('saidas',${i})">✕</td>
-      </tr>
-    `).join("");
-  }
-
-  window.registrar = function(){
-    if(corridas.style.display !== "none"){
-      if(!valorCorrida.value) return;
-      dados.entradas.push({
-        desc: tipoCorrida.value + (subTipo.value ? " - "+subTipo.value : ""),
-        valor: Number(valorCorrida.value)
-      });
-      valorCorrida.value="";
-    }
-
-    if(outras.style.display !== "none"){
-      if(!valorOutra.value) return;
-      dados.entradas.push({
-        desc: descOutra.value,
-        valor: Number(valorOutra.value)
-      });
-      descOutra.value = valorOutra.value = "";
-    }
-
-    if(saidas.style.display !== "none"){
-      if(!valorSaida.value) return;
-      dados.saidas.push({
-        desc: tipoSaida.value,
-        valor: Number(valorSaida.value)
-      });
-      valorSaida.value="";
-    }
-
-    render();
-    atualizar();
-  }
-
-  window.del = function(tipo,i){
-    dados[tipo].splice(i,1);
-    render();
-    atualizar();
-  }
-
-  window.fecharCaixa = function(){
-    const ent = dados.entradas.reduce((s,i)=>s + Number(i.valor||0),0);
-    const sai = dados.saidas.reduce((s,i)=>s + Number(i.valor||0),0);
-    const saldo = ent - sai;
-
-    if(saldo <= 0) return alert("Saldo zerado ou negativo.");
-
-    if(!confirm(`Fechar caixa e enviar ${saldo.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})} para a carteira?`)) return;
-
-    const resp = DataManager.adicionarSaldoCarteira(saldo);
-    if(!resp.ok) return alert(resp.msg || "Erro ao fechar caixa.");
-
-    localStorage.removeItem("rf_caixa");
-    localStorage.removeItem("rf_caixa_total_entradas");
-    localStorage.removeItem("rf_caixa_total_saidas");
-
-    location.reload();
-  }
-
-  document.querySelectorAll(".tab-btn").forEach(btn=>{
-    btn.onclick = ()=>{
-      document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      document.querySelectorAll(".tab").forEach(t=>t.style.display="none");
-      document.getElementById(btn.dataset.tab).style.display="block";
-    }
-  });
-
-  atualizar();
-  render();
+/* GRÁFICO */
+const grafico = new Chart(document.getElementById("grafico"),{
+  type:"bar",
+  data:{labels:["Entradas","Saídas"],datasets:[{data:[0,0],backgroundColor:["#1DB954","#ff3b30"]}]},
+  options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
 });
+
+/* SUBTIPOS */
+tipoCorrida.onchange=()=>{
+  subTipo.innerHTML="";
+  subTipo.style.display="none";
+  let ops=[];
+  if(tipoCorrida.value==="App") ops=["Uber","99","InDrive"];
+  if(tipoCorrida.value==="Entrega") ops=["iFood","99Food","Uber Entregas","Rappi","Outros"];
+  if(ops.length){
+    subTipo.style.display="block";
+    ops.forEach(o=>subTipo.innerHTML+=`<option>${o}</option>`);
+  }
+};
+
+/* ATUALIZA */
+function atualizar(){
+  const ent = dados.entradas.reduce((s,i)=>s+Number(i.valor||0),0);
+  const sai = dados.saidas.reduce((s,i)=>s+Number(i.valor||0),0);
+
+  resEntradas.textContent = ent.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+  resSaidas.textContent = sai.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+  resSaldo.textContent = (ent-sai).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+  grafico.data.datasets[0].data=[ent,sai];
+  grafico.update();
+
+  localStorage.setItem("rf_caixa",JSON.stringify(dados));
+  localStorage.setItem("rf_caixa_total_entradas",ent);
+  localStorage.setItem("rf_caixa_total_saidas",sai);
+}
+
+/* RENDER */
+function render(){
+  listaCorridas.innerHTML = dados.entradas.map((e,i)=>`
+    <tr>
+      <td>${e.desc}</td>
+      <td>${Number(e.valor).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</td>
+      <td class="del" onclick="del('entradas',${i})">✕</td>
+    </tr>`).join("");
+
+  listaOutras.innerHTML = "";
+  listaSaidas.innerHTML = dados.saidas.map((e,i)=>`
+    <tr>
+      <td>${e.desc}</td>
+      <td>${Number(e.valor).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</td>
+      <td class="del" onclick="del('saidas',${i})">✕</td>
+    </tr>`).join("");
+}
+
+function registrar(){
+  if(corridas.style.display!=="none"){
+    if(!valorCorrida.value) return alert("Informe o valor.");
+    dados.entradas.push({
+      desc: tipoCorrida.value+(subTipo.value?" - "+subTipo.value:""),
+      valor: Number(valorCorrida.value)
+    });
+    valorCorrida.value="";
+  }
+  if(outras.style.display!=="none"){
+    if(!valorOutra.value) return alert("Informe o valor.");
+    dados.entradas.push({desc:descOutra.value,valor:Number(valorOutra.value)});
+    descOutra.value=valorOutra.value="";
+  }
+  if(saidas.style.display!=="none"){
+    if(!valorSaida.value) return alert("Informe o valor.");
+    dados.saidas.push({desc:tipoSaida.value,valor:Number(valorSaida.value)});
+    valorSaida.value="";
+  }
+  render();atualizar();
+}
+
+function del(tipo,i){
+  dados[tipo].splice(i,1);
+  render();atualizar();
+}
+
+/* TABS */
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    document.querySelectorAll(".tab").forEach(t=>t.style.display="none");
+    document.getElementById(btn.dataset.tab).style.display="block";
+  };
+});
+
+/* FECHAR CAIXA */ function fecharCaixa(){ const ent = dados.entradas.reduce((s,i)=>s+Number(i.valor||0),0); const sai = dados.saidas.reduce((s,i)=>s+Number(i.valor||0),0); const saldo = ent - sai; if(saldo<=0) return alert("Saldo zerado ou negativo."); if(!confirm(Fechar o caixa e enviar ${saldo.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})} para a carteira?)) return; const resp = DataManager.adicionarSaldoCarteira(saldo); if(!resp.ok) return alert(resp.msg||"Erro ao fechar caixa."); localStorage.removeItem("rf_caixa"); localStorage.removeItem("rf_caixa_total_entradas"); localStorage.removeItem("rf_caixa_total_saidas"); alert("Caixa fechado com sucesso."); location.reload();
+render();
+atualizar();
 </script>
 
 </body>
 </html>
+
 
 
 
