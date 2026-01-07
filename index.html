@@ -86,9 +86,7 @@ td{padding:10px;border-bottom:1px solid var(--border)}
     <i class="fa fa-xmark"></i>
   </div>
   <a href="perfil.html"><i class="fa fa-user"></i> Perfil</a>
-<a href="agendamentos.html">
-  <i class="fa-solid fa-pen-to-square"></i> Agendar Viagem
-</a>
+  <a href="agendamentos.html"><i class="fa fa-pen-to-square"></i> Agendar Viagem</a>
   <a href="instalar-app.html"><i class="fa fa-download"></i> Como Instalar App</a>
 </nav>
 
@@ -127,11 +125,7 @@ td{padding:10px;border-bottom:1px solid var(--border)}
 <nav class="bottom-nav">
   <a href="planos.html"><i class="fa fa-crown"></i></a>
   <a href="entradas.html"><i class="fa fa-cash-register"></i></a>
-
-  <a href="index.html" class="center-btn">
-    <i class="fa fa-house"></i>
-  </a>
-
+  <a href="index.html" class="center-btn"><i class="fa fa-house"></i></a>
   <a href="carteira.html"><i class="fa fa-wallet"></i></a>
   <a href="resumo.html"><i class="fa fa-file"></i></a>
 </nav>
@@ -140,43 +134,48 @@ td{padding:10px;border-bottom:1px solid var(--border)}
 
 <script>
 /* ===== TEMA ===== */
-(function(){
-  document.body.dataset.theme = localStorage.getItem("tema") || "dark";
-})();
+document.body.dataset.theme = DataManager.getTema();
 function toggleTheme(){
-  const t = document.body.dataset.theme === "light" ? "dark" : "light";
+  const t = DataManager.getTema()==="light"?"dark":"light";
+  DataManager.setTema(t);
   document.body.dataset.theme = t;
-  localStorage.setItem("tema", t);
 }
+
 function toggleDrawer(){
   document.getElementById("drawer").classList.toggle("open");
 }
 
-/* ===== DASHBOARD INTEGRADO AO LIVRO CAIXA ===== */
-const CAIXA_KEY = "rfdriver_livro_caixa";
+const moeda = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 
+/* ===== DASHBOARD ===== */
 function atualizarDashboard(){
-  const dados = JSON.parse(localStorage.getItem(CAIXA_KEY)) || [];
 
-  const entradas = dados.filter(d=>d.valor>0).reduce((s,d)=>s+d.valor,0);
-  const saidas   = dados.filter(d=>d.valor<0).reduce((s,d)=>s+d.valor,0) * -1;
-  const lucro    = entradas - saidas;
+  const caixa = DataManager.getCaixaAtual();
+  const movs = caixa.movimentos || [];
 
-  fat.textContent     = entradas.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-  gastos.textContent  = saidas.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-  lucroValor.textContent = lucro.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+  let entradas = 0, saidas = 0;
 
-  statusCaixa.textContent = dados.length > 0 ? "Caixa Aberto" : "Caixa Fechado";
-  statusCaixa.style.color = dados.length > 0 ? "var(--green)" : "var(--red)";
+  movs.forEach(m=>{
+    if(m.tipo === "entrada") entradas += m.valor;
+    if(m.tipo === "saida") saidas += m.valor;
+  });
 
-  const meta = Number(localStorage.getItem("rf_meta_diaria")) || 250;
+  const lucro = entradas - saidas;
+
+  fat.textContent        = moeda(entradas);
+  gastos.textContent     = moeda(saidas);
+  lucroValor.textContent = moeda(lucro);
+
+  const aberto = movs.length > 0;
+  statusCaixa.textContent = aberto ? "Caixa Aberto" : "Caixa Fechado";
+  statusCaixa.style.color = aberto ? "var(--green)" : "var(--red)";
+
+  const meta = DataManager.getMetaDiaria() || 250;
   metaBar.style.width = Math.min((entradas/meta)*100,100)+"%";
 
-  /* ===== AGENDAMENTOS ===== */
-  const data = DataManager.getData();
+  /* AGENDAMENTOS */
   const hoje = new Date().toISOString().slice(0,10);
-
-  const ags = (data.agendamentos||[])
+  const ags = DataManager.listarAgendamentos()
     .filter(a=>a.data>=hoje)
     .sort((a,b)=>`${a.data} ${a.hora}`.localeCompare(`${b.data} ${b.hora}`))
     .slice(0,5);
@@ -189,9 +188,7 @@ function atualizarDashboard(){
           ${a.origem} → ${a.destino}<br>
           <span class="badge">${a.tipo}</span>
         </td>
-        <td>
-          ${a.valor.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
-        </td>
+        <td>${moeda(a.valor)}</td>
       </tr>
     `).join("")
     : "<tr><td>Nenhuma viagem agendada</td></tr>";
