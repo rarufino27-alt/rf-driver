@@ -60,11 +60,6 @@ body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
   width:0%
 }
 
-/* STATUS */
-.status.ok{color:var(--green)}
-.status.alerta{color:#f5c542}
-.status.risco{color:var(--red)}
-
 /* TOGGLES */
 .drawer-toggle,.theme-toggle{
   position:fixed;top:15px;font-size:22px;
@@ -107,14 +102,13 @@ body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
   font-size:24px;margin-top:-30px
 }
 
-/* SUPORTE */
-.suporte-whatsapp{
-  margin:16px;padding:10px 14px;
-  background:#25d366;color:#fff;
-  border-radius:999px;
-  text-align:center;font-weight:600;
-  text-decoration:none;
-  display:flex;align-items:center;justify-content:center;gap:8px
+/* HISTÓRICO */
+.history-item{
+  display:flex;
+  justify-content:space-between;
+  border-bottom:1px solid var(--border);
+  padding:8px 0;
+  font-size:14px;
 }
 </style>
 </head>
@@ -130,17 +124,11 @@ body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
   </div>
   <a href="perfil.html"><i class="fa fa-user"></i></a>
   <a href="instalar-app.html"><i class="fa fa-download"></i> Como Instalar App</a>
-  <a </a>
-  <a class="suporte-whatsapp"
-     href="https://wa.me/5581992716132?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20com%20o%20RF%20Driver."
-     target="_blank">
-    <i class="fa-brands fa-whatsapp"></i> Suporte WhatsApp
-  </a>
 </nav>
 
 <div class="header">
   <h1>Carteira</h1>
-  <small>Resumo financeiro do mês</small>
+  <small>Resumo financeiro acumulado</small>
 </div>
 
 <div class="dashboard-grid">
@@ -155,51 +143,20 @@ body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
     </button>
     <div class="hint">Remove todo o saldo e histórico</div>
   </div>
-
-  <div class="quad">
-    <small>Meta Mensal</small>
-    <h3 id="metaMensal">R$ 0,00</h3>
-    <div><strong id="pago"></strong> pago</div>
-    <div><strong id="falta"></strong> falta</div>
-    <div class="progress"><div class="progress-bar" id="barraMeta"></div></div>
-  </div>
-
-  <div class="quad">
-    <small>Meta Diária</small>
-    <h3 id="metaDiaria">R$ 0,00</h3>
-  </div>
-
-  <div class="quad">
-    <small>Status do Mês</small>
-    <h3 id="statusMes"></h3>
-  </div>
 </div>
 
 <div class="card">
-  <small>🤖 Sugestão financeira</small>
-  <h3 id="iaTitulo"></h3>
-  <p id="iaTexto"></p>
-</div>
-
-<div class="card">
-  <small>📈 Previsão do mês</small>
-  <h3 id="previsaoValor"></h3>
-  <p id="previsaoTexto"></p>
+  <small>📤 Histórico de Repasses Diários</small>
+  <div id="historicoRepasses"></div>
 </div>
 
 <nav class="bottom-nav">
   <a href="planos.html"><i class="fa fa-crown"></i></a>
   <a href="entradas.html"><i class="fa fa-cash-register"></i></a>
-
-  <a href="index.html" class="center-btn">
-    <i class="fa fa-house"></i>
-  </a>
-
+  <a href="index.html" class="center-btn"><i class="fa fa-house"></i></a>
   <a href="carteira.html"><i class="fa fa-wallet"></i></a>
   <a href="resumo.html"><i class="fa fa-file"></i></a>
 </nav>
-
-<script src="dataManager.js"></script>
 
 <script>
 (function(){
@@ -216,41 +173,49 @@ function toggleDrawer(){
   document.getElementById("drawer").classList.toggle("open");
 }
 
-/* CARTEIRA ENGINE */
 const moeda = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 
-(function render(){
-  const data = DataManager.getData();
-  const saldoAtual = DataManager.getSaldoCarteira();
+const SALDO_KEY = "rfdriver_carteira_saldo";
+const DIARIO_KEY = "rfdriver_caixa_diario";
 
-  saldo.textContent = moeda(saldoAtual);
+function renderCarteira(){
+  const saldoAtual = Number(localStorage.getItem(SALDO_KEY)) || 0;
+  document.getElementById("saldo").textContent = moeda(saldoAtual);
 
-  const total = data.pagamentos.reduce((s,p)=>s+p.valor,0);
-  const pagoTotal = data.pagamentos.filter(p=>p.pago).reduce((s,p)=>s+p.valor,0);
-  const faltaTotal = total - pagoTotal;
+  const lista = document.getElementById("historicoRepasses");
+  const dias = JSON.parse(localStorage.getItem(DIARIO_KEY)) || [];
 
-  metaMensal.textContent = moeda(total);
-  pago.textContent = moeda(pagoTotal);
-  falta.textContent = moeda(faltaTotal);
+  if(dias.length === 0){
+    lista.innerHTML = "<small>Nenhum repasse registrado</small>";
+    return;
+  }
 
-  const perc = total > 0 ? (pagoTotal/total)*100 : 0;
-  barraMeta.style.width = perc + "%";
-
-  const dias = new Date().getDate();
-  metaDiaria.textContent = moeda(faltaTotal / Math.max(1,dias));
-
-  statusMes.textContent = faltaTotal <= 0 ? "Mês controlado" : "Em andamento";
-})();
+  lista.innerHTML = "";
+  dias.slice().reverse().forEach(d=>{
+    lista.innerHTML += `
+      <div class="history-item">
+        <span>
+          ${d.data}<br>
+          <small>
+            Entradas: ${moeda(d.entradas)} |
+            Saídas: ${moeda(d.saidas)}
+          </small>
+        </span>
+        <strong>${moeda(d.saldo)}</strong>
+      </div>
+    `;
+  });
+}
 
 function limparCarteira(){
-  if(!confirm("Isso apagará todo o histórico da carteira. Continuar?")) return;
-  DataManager.limparCarteira();
+  if(!confirm("Isso apagará todo o histórico financeiro. Continuar?")) return;
+  localStorage.removeItem(SALDO_KEY);
+  localStorage.removeItem(DIARIO_KEY);
   location.reload();
 }
+
+renderCarteira();
 </script>
 
 </body>
 </html>
-
-
-
