@@ -48,18 +48,6 @@ body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
 .quad small{opacity:.7}
 .hint{font-size:13px;opacity:.6;margin-top:6px}
 
-/* PROGRESSO */
-.progress{
-  margin-top:10px;height:8px;
-  background:var(--border);
-  border-radius:6px;overflow:hidden
-}
-.progress-bar{
-  height:100%;
-  background:var(--gold);
-  width:0%
-}
-
 /* TOGGLES */
 .drawer-toggle,.theme-toggle{
   position:fixed;top:15px;font-size:22px;
@@ -158,15 +146,18 @@ body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
   <a href="resumo.html"><i class="fa fa-file"></i></a>
 </nav>
 
+<script src="dataManager.js"></script>
+
 <script>
+/* ========= TEMA ========= */
 (function(){
-  document.body.dataset.theme = localStorage.getItem("tema") || "dark";
+  document.body.dataset.theme = DataManager.getTema();
 })();
 
 function toggleTheme(){
-  const t = document.body.dataset.theme === "light" ? "dark" : "light";
+  const t = DataManager.getTema() === "light" ? "dark" : "light";
+  DataManager.setTema(t);
   document.body.dataset.theme = t;
-  localStorage.setItem("tema", t);
 }
 
 function toggleDrawer(){
@@ -175,17 +166,16 @@ function toggleDrawer(){
 
 const moeda = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 
-const SALDO_KEY = "rfdriver_carteira_saldo";
-const DIARIO_KEY = "rfdriver_caixa_diario";
+/* ========= CARTEIRA ========= */
 
 function renderCarteira(){
-  const saldoAtual = Number(localStorage.getItem(SALDO_KEY)) || 0;
+  const saldoAtual = DataManager.getSaldoCarteira();
   document.getElementById("saldo").textContent = moeda(saldoAtual);
 
   const lista = document.getElementById("historicoRepasses");
-  const dias = JSON.parse(localStorage.getItem(DIARIO_KEY)) || [];
+  const dias = DataManager.listarCaixaDiario();
 
-  if(dias.length === 0){
+  if(!dias.length){
     lista.innerHTML = "<small>Nenhum repasse registrado</small>";
     return;
   }
@@ -209,8 +199,7 @@ function renderCarteira(){
 
 function limparCarteira(){
   if(!confirm("Isso apagará todo o histórico financeiro. Continuar?")) return;
-  localStorage.removeItem(SALDO_KEY);
-  localStorage.removeItem(DIARIO_KEY);
+  DataManager.limparCarteira();
   location.reload();
 }
 
