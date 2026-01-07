@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login - RF Driver</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body{
+      margin:0;
+      font-family:Inter, sans-serif;
+      background:#0d0d0d;
+      color:#f4f4f4;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:100vh;
+    }
+
+    .card{
+      background:#161616;
+      padding:24px;
+      border-radius:16px;
+      width:100%;
+      max-width:360px;
+      box-shadow:0 10px 30px rgba(0,0,0,.4);
+    }
+
+    h2{
+      margin:0 0 16px;
+      text-align:center;
+    }
+
+    input{
+      width:100%;
+      padding:12px;
+      margin-top:10px;
+      border-radius:10px;
+      border:none;
+      font-size:14px;
+    }
+
+    button{
+      width:100%;
+      padding:12px;
+      margin-top:16px;
+      border-radius:10px;
+      border:none;
+      background:#f5c542;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    button:hover{
+      opacity:.9;
+    }
+
+    p{
+      margin-top:12px;
+      font-size:13px;
+      text-align:center;
+    }
+
+    a{
+      color:#f5c542;
+      cursor:pointer;
+      text-decoration:none;
+      font-weight:600;
+    }
+
+    #msg{
+      margin-top:12px;
+      font-size:13px;
+      text-align:center;
+      color:#ff6b6b;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h2>Entrar</h2>
+
+    <input id="email" type="email" placeholder="Email">
+    <input id="senha" type="password" placeholder="Senha">
+
+    <button onclick="entrar()">Entrar</button>
+
+    <p>
+      Não tem conta?
+      <a href="cadastro.html">Criar conta</a>
+    </p>
+
+    <p>
+      <a onclick="recuperar()">Esqueci minha senha</a>
+    </p>
+
+    <p id="msg"></p>
+  </div>
+
+  <script src="js/dataManager.js"></script>
+ 
+  <!-- SCRIPT DA PÁGINA -->
+  <script>
+    function entrar(){
+      const emailEl = document.getElementById("email");
+      const senhaEl = document.getElementById("senha");
+      const msgEl   = document.getElementById("msg");
+
+      msgEl.textContent = "";
+
+      if(!emailEl.value || !senhaEl.value){
+        msgEl.textContent = "Informe email e senha.";
+        return;
+      }
+
+      if(typeof AuthManager === "undefined"){
+        msgEl.textContent = "Erro interno de autenticação.";
+        console.error("AuthManager não encontrado");
+        return;
+      }
+
+      const r = AuthManager.login({
+        email: emailEl.value.trim(),
+        senha: senhaEl.value
+      });
+
+      if(r && r.erro){
+        msgEl.textContent = r.erro;
+        return;
+      }
+
+      window.location.href = "carteira.html";
+    }
+
+    function recuperar(){
+      const email = prompt("Informe seu email cadastrado:");
+      if(!email) return;
+
+      const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+      const usuario = usuarios.find(u => u.email === email);
+
+      if(!usuario){
+        alert("Email não encontrado.");
+        return;
+      }
+
+      const novaSenha = prompt("Digite a nova senha (mínimo 6 caracteres):");
+      if(!novaSenha || novaSenha.length < 6){
+        alert("Senha inválida.");
+        return;
+      }
+
+      usuario.senha = novaSenha;
+      localStorage.setItem("usuarios", JSON.stringify(usuarios));
+      alert("Senha redefinida com sucesso. Faça login.");
+    }
+  </script>
+
+</body>
+</html>

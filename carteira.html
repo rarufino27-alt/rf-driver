@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carteira - RF Driver</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+<style>
+:root{
+  --gold:#f5c542; --bg:#0d0d0d; --text:#f4f4f4;
+  --card:#161616; --border:#242424;
+  --green:#1DB954; --red:#ff3b30;
+}
+body[data-theme="light"]{
+  --bg:#f4f4f4; --text:#111; --card:#fff; --border:#ddd;
+}
+*{box-sizing:border-box;font-family:Inter}
+body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
+
+/* HEADER */
+.header{text-align:center;margin-bottom:20px}
+.header h1{margin:0;font-size:36px;color:var(--gold)}
+.header small{opacity:.7}
+
+/* GRID */
+.dashboard-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px;
+}
+
+/* CARDS */
+.quad,.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:18px;
+}
+
+/* SALDO */
+.quad.saldo{border:2px solid var(--gold)}
+.quad.saldo h2{font-size:36px;margin:10px 0}
+
+/* TEXTO */
+.quad small{opacity:.7}
+.hint{font-size:13px;opacity:.6;margin-top:6px}
+
+/* PROGRESSO */
+.progress{
+  margin-top:10px;height:8px;
+  background:var(--border);
+  border-radius:6px;overflow:hidden
+}
+.progress-bar{
+  height:100%;
+  background:var(--gold);
+  width:0%
+}
+
+/* STATUS */
+.status.ok{color:var(--green)}
+.status.alerta{color:#f5c542}
+.status.risco{color:var(--red)}
+
+/* TOGGLES */
+.drawer-toggle,.theme-toggle{
+  position:fixed;top:15px;font-size:22px;
+  color:var(--gold);cursor:pointer;z-index:40
+}
+.drawer-toggle{left:15px}
+.theme-toggle{right:15px}
+
+/* DRAWER */
+.drawer{
+  position:fixed;top:0;left:-260px;width:260px;height:100%;
+  background:var(--card);border-right:1px solid var(--border);
+  padding-top:20px;transition:.3s;z-index:30;overflow-y:auto
+}
+.drawer.open{left:0}
+.drawer a{
+  display:flex;gap:12px;
+  padding:14px 20px;
+  color:var(--text);
+  font-size:15px;
+  text-decoration:none;
+  border-bottom:1px solid var(--border)
+}
+.drawer .close-btn{
+  text-align:right;padding:0 20px 10px;cursor:pointer
+}
+
+/* BOTTOM */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--card);
+  display:flex;justify-content:space-around;
+  padding:8px 0
+}
+.bottom-nav a{color:var(--text);font-size:15px;text-decoration:none}
+.center-btn{
+  background:var(--gold);color:#000;
+  width:58px;height:58px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin-top:-30px
+}
+
+/* SUPORTE */
+.suporte-whatsapp{
+  margin:16px;padding:10px 14px;
+  background:#25d366;color:#fff;
+  border-radius:999px;
+  text-align:center;font-weight:600;
+  text-decoration:none;
+  display:flex;align-items:center;justify-content:center;gap:8px
+}
+</style>
+</head>
+
+<body>
+
+<div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
+<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
+
+<nav class="drawer" id="drawer">
+  <div class="close-btn" onclick="toggleDrawer()">
+    <i class="fa fa-xmark"></i>
+  </div>
+
+  <a href="instalar-app.html"><i class="fa fa-download"></i> Como Instalar App</a>
+  <a href="agendamentos.html"><i class="fa fa-calendar-check"></i> Agendamentos</a>
+  <a href="entradas.html"><i class="fa fa-cash-register"></i> Livro Caixa</a>
+  <a href="recibo.html"><i class="fa fa-receipt"></i> Emissão de Recibo</a>
+  <a href="resumo.html"><i class="fa fa-file"></i> Relatório Geral</a>
+  <a href="calculadora.html"><i class="fa fa-calculator"></i> Calculadora de Viagens</a>
+  <a href="manutencao.html"><i class="fa fa-tools"></i> Manutenção</a>
+  <a </a>
+  <a class="suporte-whatsapp"
+     href="https://wa.me/5581992716132?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20com%20o%20RF%20Driver."
+     target="_blank">
+    <i class="fa-brands fa-whatsapp"></i> Suporte WhatsApp
+  </a>
+</nav>
+
+<div class="header">
+  <h1>Carteira</h1>
+  <small>Resumo financeiro do mês</small>
+</div>
+
+<div class="dashboard-grid">
+  <div class="quad saldo">
+    <small>Saldo Atual</small>
+    <h2 id="saldo">R$ 0,00</h2>
+  </div>
+
+  <div class="card">
+    <button onclick="limparCarteira()" style="background:var(--red);color:#fff;font-weight:700;padding:14px;border-radius:12px;border:none;width:100%">
+      🧹 Limpar Carteira
+    </button>
+    <div class="hint">Remove todo o saldo e histórico</div>
+  </div>
+
+  <div class="quad">
+    <small>Meta Mensal</small>
+    <h3 id="metaMensal">R$ 0,00</h3>
+    <div><strong id="pago"></strong> pago</div>
+    <div><strong id="falta"></strong> falta</div>
+    <div class="progress"><div class="progress-bar" id="barraMeta"></div></div>
+  </div>
+
+  <div class="quad">
+    <small>Meta Diária</small>
+    <h3 id="metaDiaria">R$ 0,00</h3>
+  </div>
+
+  <div class="quad">
+    <small>Status do Mês</small>
+    <h3 id="statusMes"></h3>
+  </div>
+</div>
+
+<div class="card">
+  <small>🤖 Sugestão financeira</small>
+  <h3 id="iaTitulo"></h3>
+  <p id="iaTexto"></p>
+</div>
+
+<div class="card">
+  <small>📈 Previsão do mês</small>
+  <h3 id="previsaoValor"></h3>
+  <p id="previsaoTexto"></p>
+</div>
+
+<nav class="bottom-nav">
+  <a href="planos.html"><i class="fa fa-crown"></i> </a>
+  <a href="perfil.html"><i class="fa fa-user"></i> </a>
+  <a href="carteira.html"><i class="fa fa-wallet"></i> </a>
+
+  <!-- BOTÃO CENTRAL (DASHBOARD) -->
+  <a href="index.html" class="center-btn">
+    <i class="fa fa-house"></i>
+  </a>
+
+  <a href="registro-despesas.html"><i class="fa fa-file-signature"></i> </a>
+  <a href="despesas-registradas.html"><i class="fa fa-list"></i> </a>
+  <a href="acompanhamento-pagamentos.html"><i class="fa fa-clock"></i> </a>
+</nav>
+
+<script src="dataManager.js"></script>
+
+<script>
+(function(){
+  document.body.dataset.theme = localStorage.getItem("tema") || "dark";
+})();
+
+function toggleTheme(){
+  const t = document.body.dataset.theme === "light" ? "dark" : "light";
+  document.body.dataset.theme = t;
+  localStorage.setItem("tema", t);
+}
+
+function toggleDrawer(){
+  document.getElementById("drawer").classList.toggle("open");
+}
+
+/* CARTEIRA ENGINE */
+const moeda = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+(function render(){
+  const data = DataManager.getData();
+  const saldoAtual = DataManager.getSaldoCarteira();
+
+  saldo.textContent = moeda(saldoAtual);
+
+  const total = data.pagamentos.reduce((s,p)=>s+p.valor,0);
+  const pagoTotal = data.pagamentos.filter(p=>p.pago).reduce((s,p)=>s+p.valor,0);
+  const faltaTotal = total - pagoTotal;
+
+  metaMensal.textContent = moeda(total);
+  pago.textContent = moeda(pagoTotal);
+  falta.textContent = moeda(faltaTotal);
+
+  const perc = total > 0 ? (pagoTotal/total)*100 : 0;
+  barraMeta.style.width = perc + "%";
+
+  const dias = new Date().getDate();
+  metaDiaria.textContent = moeda(faltaTotal / Math.max(1,dias));
+
+  statusMes.textContent = faltaTotal <= 0 ? "Mês controlado" : "Em andamento";
+})();
+
+function limparCarteira(){
+  if(!confirm("Isso apagará todo o histórico da carteira. Continuar?")) return;
+  DataManager.limparCarteira();
+  location.reload();
+}
+</script>
+
+</body>
+</html>

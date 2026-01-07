@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Relatório Financeiro - RF Driver</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+<style>
+:root{
+  --gold:#f5c542; --bg:#0d0d0d; --text:#f4f4f4;
+  --card:#161616; --border:#242424;
+  --green:#1DB954; --yellow:#f5c542; --red:#ff3b30;
+}
+body[data-theme="light"]{
+  --bg:#f4f4f4; --text:#111; --card:#fff; --border:#ddd;
+}
+*{box-sizing:border-box;font-family:Inter}
+body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
+
+.drawer-toggle,.theme-toggle{
+  position:fixed;top:15px;font-size:22px;color:var(--gold);cursor:pointer;z-index:20
+}
+.drawer-toggle{left:15px}
+.theme-toggle{right:15px}
+
+.drawer{
+  position:fixed;top:0;left:-260px;width:260px;height:100%;
+  background:var(--card);border-right:1px solid var(--border);
+  padding-top:20px;transition:.3s;z-index:15
+}
+.drawer.open{left:0}
+.drawer a{
+  display:flex;gap:12px;padding:14px 20px;
+  color:var(--text);text-decoration:none;border-bottom:1px solid var(--border)
+}
+
+h1{text-align:center;color:var(--gold)}
+small{text-align:center;display:block;opacity:.7;margin-bottom:16px}
+
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:16px;margin-bottom:16px
+}
+.line{display:flex;justify-content:space-between;margin-bottom:8px;font-weight:600}
+
+.progress{height:10px;background:var(--border);border-radius:10px;overflow:hidden}
+.progress span{display:block;height:100%;background:var(--gold)}
+
+.ok{border-left:6px solid var(--green)}
+.alerta{border-left:6px solid var(--yellow)}
+.critica{border-left:6px solid var(--red)}
+
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--card);border-top:1px solid var(--border);
+  display:flex;justify-content:space-around;padding:8px 0
+}
+.bottom-nav a{color:var(--text);font-size:15px;text-decoration:none}
+.center-btn{
+  background:var(--gold);color:#000;width:58px;height:58px;
+  border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:24px;margin-top:-30px
+}
+</style>
+</head>
+
+<body>
+
+<div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
+<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
+
+<nav class="drawer" id="drawer">
+  <a href="index.html"><i class="fa fa-house"></i> Dashboard</a>
+  <a href="entradas.html"><i class="fa fa-cash-register"></i> Livro Caixa</a>
+  <a href="carteira.html"><i class="fa fa-wallet"></i> Carteira</a>
+</nav>
+
+<h1>Relatório Financeiro</h1>
+<small>Leitura consolidada do Livro Caixa</small>
+
+<div class="card">
+  <div class="line"><span>Meta Mensal</span><span id="metaMensal">—</span></div>
+  <div class="line"><span>Meta Diária</span><span id="metaDiaria">—</span></div>
+  <div class="line"><span>Atingido</span><span id="percentual">0%</span></div>
+  <div class="progress"><span id="barraMeta"></span></div>
+</div>
+
+<div class="card">
+  <div class="line"><span>Total Entradas</span><span id="totalEntradas">R$ 0,00</span></div>
+  <div class="line"><span>Total Saídas</span><span id="totalSaidas">R$ 0,00</span></div>
+  <div class="line"><strong>Lucro Total</strong><strong id="lucroTotal">R$ 0,00</strong></div>
+</div>
+
+<div id="historico"></div>
+
+<nav class="bottom-nav">
+  <a href="perfil.html"><i class="fa fa-user"></i></a>
+  <a href="carteira.html"><i class="fa fa-wallet"></i></a>
+  <a href="index.html" class="center-btn"><i class="fa fa-house"></i></a>
+  <a href="entradas.html"><i class="fa fa-cash-register"></i></a>
+</nav>
+
+<script src="dataManager.js"></script>
+
+<script>
+(function(){
+  document.body.dataset.theme = localStorage.getItem("tema") || "dark";
+})();
+function toggleTheme(){
+  const t=document.body.dataset.theme==="light"?"dark":"light";
+  document.body.dataset.theme=t;
+  localStorage.setItem("tema",t);
+}
+function toggleDrawer(){
+  drawer.classList.toggle("open");
+}
+
+(function(){
+  const data = DataManager.getData() || {};
+  const caixas = Array.isArray(data.caixaFechado) ? data.caixaFechado : [];
+
+  let entradas=0, saidas=0;
+  caixas.forEach(c=>{
+    entradas+=Number(c.entradas||0);
+    saidas+=Number(c.saidas||0);
+  });
+
+  const lucro = entradas - saidas;
+
+  totalEntradas.textContent = entradas.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+  totalSaidas.textContent   = saidas.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+  lucroTotal.textContent    = lucro.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+  const hoje = new Date();
+  const mesKey = hoje.getFullYear()+"-"+String(hoje.getMonth()+1).padStart(2,"0");
+  const metaMensalVal = Number(data.metasMensais?.[mesKey] || 0);
+
+  const diasRestantes = new Date(hoje.getFullYear(),hoje.getMonth()+1,0).getDate() - hoje.getDate() + 1;
+  const metaDiariaVal = metaMensalVal && diasRestantes>0 ? metaMensalVal/diasRestantes : 0;
+
+  metaMensal.textContent = metaMensalVal
+    ? metaMensalVal.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})
+    : "Não definida";
+
+  metaDiaria.textContent = metaDiariaVal
+    ? metaDiariaVal.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})
+    : "—";
+
+  const perc = metaMensalVal ? Math.min((lucro/metaMensalVal)*100,100) : 0;
+  percentual.textContent = perc.toFixed(1)+"%";
+  barraMeta.style.width = perc+"%";
+
+  const hist = document.getElementById("historico");
+  if(!caixas.length){
+    hist.innerHTML="<p style='opacity:.6;text-align:center'>Nenhum caixa fechado.</p>";
+    return;
+  }
+
+  const semanas = {};
+  caixas.forEach(c=>{
+    const d=new Date(c.data);
+    const dia=d.getDay()||7;
+    d.setDate(d.getDate()-dia+1);
+    const k=d.toISOString().slice(0,10);
+    (semanas[k]??=[]).push(c);
+  });
+
+  Object.keys(semanas).sort().forEach(k=>{
+    let e=0,s=0;
+    semanas[k].forEach(c=>{e+=Number(c.entradas||0);s+=Number(c.saidas||0)});
+    const saldo=e-s, diaria=saldo/7;
+
+    let cls="ok";
+    if(diaria>350)cls="critica";
+    else if(diaria>200)cls="alerta";
+
+    const ini=new Date(k), fim=new Date(ini);fim.setDate(fim.getDate()+6);
+
+    hist.innerHTML+=`
+      <div class="card ${cls}">
+        <strong>${ini.toLocaleDateString("pt-BR")} → ${fim.toLocaleDateString("pt-BR")}</strong>
+        <div class="line"><span>Entradas</span><span>${e.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</span></div>
+        <div class="line"><span>Saídas</span><span>${s.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</span></div>
+        <div class="line"><strong>Saldo</strong><strong>${saldo.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</strong></div>
+        <div class="line"><span>Média diária</span><span>${diaria.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</span></div>
+      </div>`;
+  });
+})();
+</script>
+
+</body>
+</html>
