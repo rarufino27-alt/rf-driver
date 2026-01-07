@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metas — RF Driver</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="css/css-theme.css">
+</head>
+
+<body>
+
+<div class="drawer-toggle" onclick="GlobalUI.toggleDrawer()">
+  <i class="fa fa-bars"></i>
+</div>
+
+<div class="theme-toggle" onclick="GlobalTheme.toggle()">
+  <i class="fa fa-moon"></i>
+</div>
+
+<div id="menu-lateral"></div>
+
+<main id="conteudo">
+
+  <section class="card hero-card">
+    <h1 class="hero-title">Metas</h1>
+    <p class="hero-subtitle">Defina seus objetivos financeiros</p>
+  </section>
+
+  <section class="card">
+
+    <label>Meta diária</label>
+    <input type="number" id="metaDiaria" placeholder="Ex: 200">
+
+    <label>Meta semanal</label>
+    <input type="number" id="metaSemanal" placeholder="Ex: 1200">
+
+    <label>Meta mensal</label>
+    <input type="number" id="metaMensal" placeholder="Ex: 5000">
+
+    <button class="btn-primary" onclick="salvarMetas()">
+      Salvar metas
+    </button>
+
+  </section>
+
+  <section class="dashboard-grid">
+
+    <div class="card entrada">
+      <small>Progresso do dia</small>
+      <strong id="progDiaria">R$ 0,00</strong>
+    </div>
+
+    <div class="card entrada">
+      <small>Progresso do mês</small>
+      <strong id="progMensal">R$ 0,00</strong>
+    </div>
+
+  </section>
+
+</main>
+
+<div id="menu-inferior"></div>
+
+<script src="js/js-global.js"></script>
+
+<script>
+function salvarMetas(){
+  localStorage.setItem("rf_meta_diaria", metaDiaria.value || 0);
+  localStorage.setItem("rf_meta_semanal", metaSemanal.value || 0);
+  localStorage.setItem("rf_meta_mensal", metaMensal.value || 0);
+  alert("Metas salvas com sucesso");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  GlobalUI.loadComponent(
+    "menu-lateral",
+    "components/components-menu-lateral.html"
+  );
+
+  GlobalUI.loadComponent(
+    "menu-inferior",
+    "components/components-menu-inferior.html"
+  );
+
+  metaDiaria.value  = localStorage.getItem("rf_meta_diaria")  || "";
+  metaSemanal.value = localStorage.getItem("rf_meta_semanal") || "";
+  metaMensal.value  = localStorage.getItem("rf_meta_mensal")  || "";
+
+  const entradas = Number(localStorage.getItem("rf_caixa_total_entradas") || 0);
+
+  document.getElementById("progDiaria").innerText =
+    entradas.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+  document.getElementById("progMensal").innerText =
+    entradas.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+});
+</script>
+
+</body>
+</html>
