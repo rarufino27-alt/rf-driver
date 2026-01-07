@@ -126,18 +126,21 @@ td{padding:10px;border-bottom:1px solid var(--border)}
 <script src="dataManager.js"></script>
 
 <script>
+/* ========= TEMA ========= */
 (function(){
-  document.body.dataset.theme = localStorage.getItem("tema") || "dark";
+  document.body.dataset.theme = DataManager.getTema();
 })();
 
 function toggleTheme(){
-  const t=document.body.dataset.theme==="light"?"dark":"light";
-  document.body.dataset.theme=t;
-  localStorage.setItem("tema",t);
+  const t = DataManager.getTema() === "light" ? "dark" : "light";
+  DataManager.setTema(t);
+  document.body.dataset.theme = t;
 }
 function toggleDrawer(){
   document.getElementById("drawer").classList.toggle("open");
 }
+
+/* ========= AGENDAMENTOS ========= */
 
 function registrar(){
   if(!data.value || !hora.value || !origem.value || !destino.value) return;
@@ -148,11 +151,11 @@ function registrar(){
     hora: hora.value,
     origem: origem.value,
     destino: destino.value,
-    valor: Number(valor.value)||0,
+    valor: Number(valor.value) || 0,
     tipo: tipo.value
   });
 
-  data.value=hora.value=origem.value=destino.value=valor.value="";
+  data.value = hora.value = origem.value = destino.value = valor.value = "";
   render();
 }
 
@@ -164,7 +167,7 @@ function excluir(id){
 function render(){
   const hoje = new Date().toISOString().slice(0,10);
   const ags = DataManager.listarAgendamentos()
-    .filter(a=>a.data>=hoje)
+    .filter(a => a.data >= hoje)
     .sort((a,b)=>`${a.data} ${a.hora}`.localeCompare(`${b.data} ${b.hora}`));
 
   lista.innerHTML = ags.length
