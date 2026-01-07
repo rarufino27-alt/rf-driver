@@ -209,17 +209,20 @@ td{padding:10px;border-bottom:1px solid var(--border)}
 <script src="js/js-global.js"></script>
 
 <script>
+  (function(){
+  document.body.dataset.theme = localStorage.getItem("tema") || "dark";
+})();
+
+function toggleTheme(){
+  const t = document.body.dataset.theme==="light"?"dark":"light";
+  document.body.dataset.theme=t;
+  localStorage.setItem("tema",t);
+}
+function toggleDrawer(){
+  document.getElementById("drawer").classList.toggle("open");
+}
+  
 document.addEventListener("DOMContentLoaded", () => {
-
-  GlobalUI.loadComponent(
-    "menu-lateral",
-    "components/components-menu-lateral.html"
-  );
-
-  GlobalUI.loadComponent(
-    "menu-inferior",
-    "components/components-menu-inferior.html"
-  );
 
   let dados = JSON.parse(localStorage.getItem("rf_caixa")) || {
     entradas: [],
@@ -350,5 +353,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
