@@ -97,7 +97,7 @@ input,select{
   font-size:14px;
 }
 
-/* DRAWER + NAV (IGUAL AO ORIGINAL) */
+/* DRAWER + NAV */
 .drawer-toggle,.theme-toggle{
   position:fixed;top:15px;font-size:22px;
   color:var(--gold);cursor:pointer;z-index:40
@@ -202,13 +202,17 @@ input,select{
 </div>
 
 <div class="card">
+  <button class="btn btn-primary" onclick="fecharDia()">Fechar Dia e Repassar</button>
+</div>
+
+<div class="card">
   <small>Histórico do Dia</small>
   <div id="historico"></div>
 </div>
 
 <nav class="bottom-nav">
   <a href="planos.html"><i class="fa fa-crown"></i></a>
-  <a href="livro-caixa.html"><i class="fa fa-cash-register"></i></a>
+  <a href="entradas.html"><i class="fa fa-cash-register"></i></a>
   <a href="index.html" class="center-btn"><i class="fa fa-house"></i></a>
   <a href="carteira.html"><i class="fa fa-wallet"></i></a>
   <a href="resumo.html"><i class="fa fa-file"></i></a>
@@ -224,6 +228,9 @@ function toggleTheme(){
 function toggleDrawer(){drawer.classList.toggle("open")}
 
 const KEY="rfdriver_livro_caixa";
+const DIARIO_KEY="rfdriver_caixa_diario";
+const CARTEIRA_KEY="rfdriver_carteira_saldo";
+
 let dados=JSON.parse(localStorage.getItem(KEY))||[];
 
 const moeda=v=>v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
@@ -234,7 +241,11 @@ function render(){
   let total=0;historico.innerHTML="";
   dados.forEach(d=>{
     total+=d.valor;
-    historico.innerHTML+=`<div class="history-item"><span>${d.desc}</span><strong>${moeda(d.valor)}</strong></div>`;
+    historico.innerHTML+=`
+      <div class="history-item">
+        <span>${d.desc}</span>
+        <strong>${moeda(d.valor)}</strong>
+      </div>`;
   });
   saldo.textContent=moeda(total);
 }
@@ -255,6 +266,27 @@ function addSaida(){
   dados.push({desc:"Saída - "+desc,valor:-valor});
   valorSaida.value=descSaida.value="";
   salvar();
+}
+
+function fecharDia(){
+  if(dados.length===0) return alert("Nenhum registro no dia.");
+
+  const entradas=dados.filter(d=>d.valor>0).reduce((s,d)=>s+d.valor,0);
+  const saidas=dados.filter(d=>d.valor<0).reduce((s,d)=>s+d.valor,0)*-1;
+  const saldoDia=entradas-saidas;
+  const data=new Date().toISOString().slice(0,10);
+
+  const historico=JSON.parse(localStorage.getItem(DIARIO_KEY))||[];
+  historico.push({data,entradas,saidas,saldo:saldoDia});
+  localStorage.setItem(DIARIO_KEY,JSON.stringify(historico));
+
+  const saldoCarteira=Number(localStorage.getItem(CARTEIRA_KEY))||0;
+  localStorage.setItem(CARTEIRA_KEY,saldoCarteira+saldoDia);
+
+  dados=[];
+  localStorage.removeItem(KEY);
+  render();
+  alert("Dia fechado e repassado para a carteira.");
 }
 
 function toggleOutro(){
