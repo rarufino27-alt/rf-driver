@@ -115,128 +115,98 @@ td{padding:10px;border-bottom:1px solid var(--border)}
 
 <body>
 
-<!-- TOGGLES -->
-<div class="drawer-toggle" onclick="GlobalUI.toggleDrawer()">
-  <i class="fa fa-bars"></i>
+<div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
+<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
+
+<nav class="drawer" id="drawer">
+  <div class="close-btn" onclick="toggleDrawer()"><i class="fa fa-xmark"></i></div>
+
+  <a href="instalar-app.html"><i class="fa fa-download"></i> Como Instalar App</a>
+  <a href="agendamentos.html"><i class="fa fa-calendar-check"></i> Agendamentos</a>
+  <a href="entradas.html"><i class="fa fa-cash-register"></i> Livro Caixa</a>
+  <a href="recibo.html"><i class="fa fa-receipt"></i> Emissão de Recibo</a>
+  <a href="resumo.html"><i class="fa fa-file"></i> Relatório Geral</a>
+  <a href="calculadora.html"><i class="fa fa-calculator"></i> Calculadora</a>
+  <a href="manutencao.html"><i class="fa fa-tools"></i> Manutenção</a>
+
+  <a class="suporte-whatsapp"
+     href="https://wa.me/5581992716132"
+     target="_blank">
+    <i class="fa-brands fa-whatsapp"></i> Suporte WhatsApp
+  </a>
+</nav>
+
+<div class="header">
+  <h1>Livro Caixa</h1>
+  <small>Gestão Financeira Diária</small>
 </div>
 
-<div class="theme-toggle" onclick="GlobalTheme.toggle()">
-  <i class="fa fa-moon"></i>
+<div class="summary">
+  <div class="summary-row"><span>Entradas</span><span id="resEntradas">R$ 0,00</span></div>
+  <div class="summary-row"><span>Saídas</span><span id="resSaidas">R$ 0,00</span></div>
+  <div class="summary-row"><strong>Saldo</strong><strong id="resSaldo">R$ 0,00</strong></div>
+  <canvas id="grafico" height="120"></canvas>
 </div>
 
-<!-- MENU LATERAL -->
-<div id="menu-lateral"></div>
+<div class="card">
+  <button onclick="fecharCaixa()" style="background:var(--green);font-weight:700;width:100%;padding:14px;border-radius:12px;border:none">
+    🔒 Fechar Caixa do Dia
+  </button>
+</div>
 
-<!-- CONTEÚDO -->
-<main id="conteudo">
+<div class="tab-buttons">
+  <button class="tab-btn active" data-tab="corridas">Corridas</button>
+  <button class="tab-btn" data-tab="outras">Outras Entradas</button>
+  <button class="tab-btn" data-tab="saidas">Saídas</button>
+</div>
 
-  <!-- HEADER -->
-  <section class="card hero-card">
-    <h1 class="hero-title">Livro Caixa</h1>
-    <p class="hero-subtitle">Controle financeiro diário</p>
-  </section>
+<div class="card tab" id="corridas">
+  <select id="tipoCorrida">
+    <option value="">Tipo de corrida</option>
+    <option value="App">Corridas de Aplicativo</option>
+    <option value="Entrega">Outros Aplicativos</option>
+    <option value="Empresa">Empresa</option>
+    <option value="Particular">Particular</option>
+  </select>
+  <select id="subTipo" style="display:none"></select>
+  <input id="valorCorrida" type="number" placeholder="Valor (R$)">
+  <table><tbody id="listaCorridas"></tbody></table>
+</div>
 
-  <!-- RESUMO -->
-  <section class="card">
-    <div class="dashboard-grid">
-      <div class="card entrada">
-        <small>Entradas</small>
-        <strong id="resEntradas">R$ 0,00</strong>
-      </div>
+<div class="card tab" id="outras">
+  <input id="descOutra" placeholder="Descrição">
+  <input id="valorOutra" type="number" placeholder="Valor (R$)">
+  <table><tbody id="listaOutras"></tbody></table>
+</div>
 
-      <div class="card saida">
-        <small>Saídas</small>
-        <strong id="resSaidas">R$ 0,00</strong>
-      </div>
-    </div>
+<div class="card tab" id="saidas">
+  <select id="tipoSaida">
+    <option>Combustível</option><option>Alimentação</option>
+    <option>Pedágio</option><option>Outros</option>
+  </select>
+  <input id="valorSaida" type="number" placeholder="Valor (R$)">
+  <table><tbody id="listaSaidas"></tbody></table>
+</div>
 
-    <div style="margin-top:14px;text-align:center">
-      <small style="opacity:.7">Saldo do caixa</small>
-      <strong id="resSaldo"
-              style="display:block;font-size:1.6rem;color:var(--gold)">
-        R$ 0,00
-      </strong>
-    </div>
+<div class="footer-action">
+  <button onclick="registrar()" style="width:100%;padding:14px;border:none;border-radius:12px;background:var(--gold);font-weight:700">
+    Registrar
+  </button>
+</div>
 
-    <canvas id="grafico" height="120" style="margin-top:16px"></canvas>
-  </section>
-
-  <!-- FECHAR CAIXA -->
-  <section class="card">
-    <button class="btn-primary"
-            style="background:#1DB954"
-            onclick="fecharCaixa()">
-      🔒 Fechar Caixa do Dia
-    </button>
-  </section>
-
-  <!-- TABS -->
-  <section class="tab-buttons">
-    <button class="tab-btn active" data-tab="corridas">Corridas</button>
-    <button class="tab-btn" data-tab="outras">Outras Entradas</button>
-    <button class="tab-btn" data-tab="saidas">Saídas</button>
-  </section>
-
-  <!-- CORRIDAS -->
-  <section class="card tab" id="corridas">
-    <select id="tipoCorrida">
-      <option value="">Tipo de corrida</option>
-      <option value="App">Aplicativos</option>
-      <option value="Entrega">Entregas</option>
-      <option value="Empresa">Empresa</option>
-      <option value="Particular">Particular</option>
-    </select>
-
-    <select id="subTipo" style="display:none"></select>
-
-    <input id="valorCorrida" type="number" placeholder="Valor (R$)">
-
-    <table>
-      <tbody id="listaCorridas"></tbody>
-    </table>
-  </section>
-
-  <!-- OUTRAS -->
-  <section class="card tab" id="outras" style="display:none">
-    <input id="descOutra" placeholder="Descrição">
-    <input id="valorOutra" type="number" placeholder="Valor (R$)">
-
-    <table>
-      <tbody id="listaOutras"></tbody>
-    </table>
-  </section>
-
-  <!-- SAÍDAS -->
-  <section class="card tab" id="saidas" style="display:none">
-    <select id="tipoSaida">
-      <option>Combustível</option>
-      <option>Alimentação</option>
-      <option>Pedágio</option>
-      <option>Outros</option>
-    </select>
-
-    <input id="valorSaida" type="number" placeholder="Valor (R$)">
-
-    <table>
-      <tbody id="listaSaidas"></tbody>
-    </table>
-  </section>
-
-  <!-- REGISTRAR -->
-  <section class="cta-area">
-    <button class="btn-primary" onclick="registrar()">
-      Registrar lançamento
-    </button>
-  </section>
-
-</main>
-
-<!-- MENU INFERIOR -->
-<div id="menu-inferior"></div>
+<nav class="bottom-nav">
+  <a href="planos.html"><i class="fa fa-crown"></i></a>
+  <a href="perfil.html"><i class="fa fa-user"></i></a>
+  <a href="carteira.html"><i class="fa fa-wallet"></i></a>
+  <a href="index.html" class="center-btn"><i class="fa fa-house"></i></a>
+  <a href="registro-despesas.html"><i class="fa fa-file-signature"></i></a>
+  <a href="despesas-registradas.html"><i class="fa fa-list"></i></a>
+  <a href="acompanhamento-pagamentos.html"><i class="fa fa-clock"></i></a>
+</nav>
 
 <!-- SCRIPTS -->
-<script src="js/js-global.js"></script>
 <script src="js/js-dataManager.js"></script>
+<script src="js/js-global.js"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -380,4 +350,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
