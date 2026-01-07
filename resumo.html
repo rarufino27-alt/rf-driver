@@ -20,12 +20,15 @@ body[data-theme="light"]{
 *{box-sizing:border-box;font-family:Inter}
 body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
 
+/* TOPO */
 .drawer-toggle,.theme-toggle{
-  position:fixed;top:15px;font-size:22px;color:var(--gold);cursor:pointer;z-index:20
+  position:fixed;top:15px;font-size:22px;
+  color:var(--gold);cursor:pointer;z-index:20
 }
 .drawer-toggle{left:15px}
 .theme-toggle{right:15px}
 
+/* DRAWER */
 .drawer{
   position:fixed;top:0;left:-260px;width:260px;height:100%;
   background:var(--card);border-right:1px solid var(--border);
@@ -34,25 +37,33 @@ body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
 .drawer.open{left:0}
 .drawer a{
   display:flex;gap:12px;padding:14px 20px;
-  color:var(--text);text-decoration:none;border-bottom:1px solid var(--border)
+  color:var(--text);text-decoration:none;
+  border-bottom:1px solid var(--border)
 }
 
+/* CONTEÚDO */
 h1{text-align:center;color:var(--gold)}
 small{text-align:center;display:block;opacity:.7;margin-bottom:16px}
 
 .card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:14px;padding:16px;margin-bottom:16px
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:16px
 }
-.line{display:flex;justify-content:space-between;margin-bottom:8px;font-weight:600}
-
-.progress{height:10px;background:var(--border);border-radius:10px;overflow:hidden}
-.progress span{display:block;height:100%;background:var(--gold)}
+.line{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:8px;
+  font-weight:600
+}
 
 .ok{border-left:6px solid var(--green)}
 .alerta{border-left:6px solid var(--yellow)}
 .critica{border-left:6px solid var(--red)}
 
+/* BOTTOM */
 .bottom-nav{
   position:fixed;bottom:0;left:0;right:0;
   background:var(--card);border-top:1px solid var(--border);
@@ -60,9 +71,10 @@ small{text-align:center;display:block;opacity:.7;margin-bottom:16px}
 }
 .bottom-nav a{color:var(--text);font-size:15px;text-decoration:none}
 .center-btn{
-  background:var(--gold);color:#000;width:58px;height:58px;
-  border-radius:50%;display:flex;align-items:center;
-  justify-content:center;font-size:24px;margin-top:-30px
+  background:var(--gold);color:#000;
+  width:58px;height:58px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin-top:-30px
 }
 </style>
 </head>
@@ -73,7 +85,7 @@ small{text-align:center;display:block;opacity:.7;margin-bottom:16px}
 <div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
 
 <nav class="drawer" id="drawer">
-  <a href="perfil.html"><i class="fa fa-user"></i></a>
+  <a href="perfil.html"><i class="fa fa-user"></i> Perfil</a>
   <a href="instalar-app.html"><i class="fa fa-download"></i> Como Instalar App</a>
 </nav>
 
@@ -96,42 +108,48 @@ small{text-align:center;display:block;opacity:.7;margin-bottom:16px}
   <a href="resumo.html"><i class="fa fa-file"></i></a>
 </nav>
 
+<script src="dataManager.js"></script>
+
 <script>
+/* ===== TEMA UNIFICADO ===== */
 (function(){
   document.body.dataset.theme = localStorage.getItem("tema") || "dark";
 })();
 function toggleTheme(){
-  const t=document.body.dataset.theme==="light"?"dark":"light";
-  document.body.dataset.theme=t;
-  localStorage.setItem("tema",t);
+  const t = document.body.dataset.theme === "light" ? "dark" : "light";
+  document.body.dataset.theme = t;
+  localStorage.setItem("tema", t);
 }
 function toggleDrawer(){
-  drawer.classList.toggle("open");
+  document.getElementById("drawer").classList.toggle("open");
 }
 
+/* ===== RESUMO ===== */
 const DIARIO_KEY = "rfdriver_caixa_diario";
 const moeda = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 
 (function renderResumo(){
+
   const dias = JSON.parse(localStorage.getItem(DIARIO_KEY)) || [];
 
   let totalEntradas = 0;
-  let totalSaidas = 0;
-  let lucroTotal = 0;
+  let totalSaidas   = 0;
+  let lucroTotal    = 0;
 
   dias.forEach(d=>{
-    totalEntradas += d.entradas;
-    totalSaidas   += d.saidas;
-    lucroTotal    += d.saldo;
+    totalEntradas += Number(d.entradas||0);
+    totalSaidas   += Number(d.saidas||0);
+    lucroTotal    += Number(d.saldo||0);
   });
 
-  document.getElementById("totalEntradas").textContent = moeda(totalEntradas);
-  document.getElementById("totalSaidas").textContent   = moeda(totalSaidas);
-  document.getElementById("lucroTotal").textContent    = moeda(lucroTotal);
+  totalEntradasEl.textContent = moeda(totalEntradas);
+  totalSaidasEl.textContent   = moeda(totalSaidas);
+  lucroTotalEl.textContent    = moeda(lucroTotal);
 
   const hist = document.getElementById("historico");
+
   if(!dias.length){
-    hist.innerHTML="<p style='opacity:.6;text-align:center'>Nenhum dia fechado ainda.</p>";
+    hist.innerHTML = "<p style='opacity:.6;text-align:center'>Nenhum dia fechado ainda.</p>";
     return;
   }
 
@@ -150,6 +168,13 @@ const moeda = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
     `;
   });
 })();
+</script>
+
+<script>
+/* MAPEAMENTO SEGURO DOS IDS */
+const totalEntradasEl = document.getElementById("totalEntradas");
+const totalSaidasEl   = document.getElementById("totalSaidas");
+const lucroTotalEl    = document.getElementById("lucroTotal");
 </script>
 
 </body>
