@@ -54,6 +54,26 @@
 
   </section>
 
+  <!-- ===== META DIÁRIA ===== -->
+  <section class="card" style="margin-top:18px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <strong>Meta diária</strong>
+      <a href="metas.html" style="font-size:.8rem;color:var(--gold)">Editar</a>
+    </div>
+
+    <div style="margin-top:10px">
+      <div style="font-size:.85rem;opacity:.7">
+        <span id="metaValor">Meta não definida</span>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="metaProgress"></div>
+      </div>
+
+      <small style="opacity:.7" id="metaInfo"></small>
+    </div>
+  </section>
+
   <!-- ===== CTA ===== -->
   <section class="cta-area">
     <button class="btn-primary" onclick="location.href='entradas.html'">
@@ -84,33 +104,39 @@ document.addEventListener("DOMContentLoaded", () => {
     "components/components-menu-inferior.html"
   );
 
-  const entradas = Number(
-    localStorage.getItem("rf_caixa_total_entradas") || 0
-  );
-
-  const saidas = Number(
-    localStorage.getItem("rf_caixa_total_saidas") || 0
-  );
-
-  const saldo = entradas - saidas;
+  const entradas = Number(localStorage.getItem("rf_caixa_total_entradas") || 0);
+  const saidas   = Number(localStorage.getItem("rf_caixa_total_saidas") || 0);
+  const saldo    = entradas - saidas;
 
   document.getElementById("dashEntradas").innerText =
-    entradas.toLocaleString("pt-BR",{
-      style:"currency",
-      currency:"BRL"
-    });
+    entradas.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 
   document.getElementById("dashSaidas").innerText =
-    saidas.toLocaleString("pt-BR",{
-      style:"currency",
-      currency:"BRL"
-    });
+    saidas.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 
   document.getElementById("dashSaldo").innerText =
-    saldo.toLocaleString("pt-BR",{
-      style:"currency",
-      currency:"BRL"
-    });
+    saldo.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+  /* ===== METAS ===== */
+  const meta = Number(localStorage.getItem("rf_meta_diaria") || 0);
+  const metaValor = document.getElementById("metaValor");
+  const metaInfo = document.getElementById("metaInfo");
+  const metaProgress = document.getElementById("metaProgress");
+
+  if(meta > 0){
+    const percentual = Math.min((entradas / meta) * 100, 100);
+
+    metaValor.innerText =
+      meta.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+    metaProgress.style.width = percentual + "%";
+
+    metaInfo.innerText =
+      `${percentual.toFixed(0)}% da meta atingida`;
+  }else{
+    metaProgress.style.width = "0%";
+    metaInfo.innerText = "Defina sua meta para acompanhar o progresso";
+  }
 
 });
 </script>
