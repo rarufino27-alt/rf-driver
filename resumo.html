@@ -75,24 +75,10 @@ small{text-align:center;display:block;opacity:.7;margin-bottom:16px}
 <nav class="drawer" id="drawer">
   <a href="perfil.html"><i class="fa fa-user"></i></a>
   <a href="instalar-app.html"><i class="fa fa-download"></i> Como Instalar App</a>
-<a  </a>
-
-  <a class="suporte-whatsapp"
-    href="https://wa.me/5581992716132?text=01%C3%A1%2C%20preciso%20de%20ajuda%20com%20o%20RF%20Driver."
-    target="_blank">
-    <i class="fa-brands fa-whatsapp"></i>i> suporte whatsapp
-  </a>
 </nav>
 
 <h1>Relatório Financeiro</h1>
-<small>Leitura consolidada do Livro Caixa</small>
-
-<div class="card">
-  <div class="line"><span>Meta Mensal</span><span id="metaMensal">—</span></div>
-  <div class="line"><span>Meta Diária</span><span id="metaDiaria">—</span></div>
-  <div class="line"><span>Atingido</span><span id="percentual">0%</span></div>
-  <div class="progress"><span id="barraMeta"></span></div>
-</div>
+<small>Consolidado por dias trabalhados</small>
 
 <div class="card">
   <div class="line"><span>Total Entradas</span><span id="totalEntradas">R$ 0,00</span></div>
@@ -105,16 +91,10 @@ small{text-align:center;display:block;opacity:.7;margin-bottom:16px}
 <nav class="bottom-nav">
   <a href="planos.html"><i class="fa fa-crown"></i></a>
   <a href="entradas.html"><i class="fa fa-cash-register"></i></a>
-
-  <a href="index.html" class="center-btn">
-    <i class="fa fa-house"></i>
-  </a>
-
+  <a href="index.html" class="center-btn"><i class="fa fa-house"></i></a>
   <a href="carteira.html"><i class="fa fa-wallet"></i></a>
   <a href="resumo.html"><i class="fa fa-file"></i></a>
 </nav>
-
-<script src="dataManager.js"></script>
 
 <script>
 (function(){
@@ -129,80 +109,48 @@ function toggleDrawer(){
   drawer.classList.toggle("open");
 }
 
-(function(){
-  const data = DataManager.getData() || {};
-  const caixas = Array.isArray(data.caixaFechado) ? data.caixaFechado : [];
+const DIARIO_KEY = "rfdriver_caixa_diario";
+const moeda = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 
-  let entradas=0, saidas=0;
-  caixas.forEach(c=>{
-    entradas+=Number(c.entradas||0);
-    saidas+=Number(c.saidas||0);
+(function renderResumo(){
+  const dias = JSON.parse(localStorage.getItem(DIARIO_KEY)) || [];
+
+  let totalEntradas = 0;
+  let totalSaidas = 0;
+  let lucroTotal = 0;
+
+  dias.forEach(d=>{
+    totalEntradas += d.entradas;
+    totalSaidas   += d.saidas;
+    lucroTotal    += d.saldo;
   });
 
-  const lucro = entradas - saidas;
-
-  totalEntradas.textContent = entradas.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-  totalSaidas.textContent   = saidas.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-  lucroTotal.textContent    = lucro.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-
-  const hoje = new Date();
-  const mesKey = hoje.getFullYear()+"-"+String(hoje.getMonth()+1).padStart(2,"0");
-  const metaMensalVal = Number(data.metasMensais?.[mesKey] || 0);
-
-  const diasRestantes = new Date(hoje.getFullYear(),hoje.getMonth()+1,0).getDate() - hoje.getDate() + 1;
-  const metaDiariaVal = metaMensalVal && diasRestantes>0 ? metaMensalVal/diasRestantes : 0;
-
-  metaMensal.textContent = metaMensalVal
-    ? metaMensalVal.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})
-    : "Não definida";
-
-  metaDiaria.textContent = metaDiariaVal
-    ? metaDiariaVal.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})
-    : "—";
-
-  const perc = metaMensalVal ? Math.min((lucro/metaMensalVal)*100,100) : 0;
-  percentual.textContent = perc.toFixed(1)+"%";
-  barraMeta.style.width = perc+"%";
+  document.getElementById("totalEntradas").textContent = moeda(totalEntradas);
+  document.getElementById("totalSaidas").textContent   = moeda(totalSaidas);
+  document.getElementById("lucroTotal").textContent    = moeda(lucroTotal);
 
   const hist = document.getElementById("historico");
-  if(!caixas.length){
-    hist.innerHTML="<p style='opacity:.6;text-align:center'>Nenhum caixa fechado.</p>";
+  if(!dias.length){
+    hist.innerHTML="<p style='opacity:.6;text-align:center'>Nenhum dia fechado ainda.</p>";
     return;
   }
 
-  const semanas = {};
-  caixas.forEach(c=>{
-    const d=new Date(c.data);
-    const dia=d.getDay()||7;
-    d.setDate(d.getDate()-dia+1);
-    const k=d.toISOString().slice(0,10);
-    (semanas[k]??=[]).push(c);
-  });
-
-  Object.keys(semanas).sort().forEach(k=>{
-    let e=0,s=0;
-    semanas[k].forEach(c=>{e+=Number(c.entradas||0);s+=Number(c.saidas||0)});
-    const saldo=e-s, diaria=saldo/7;
-
+  dias.slice().reverse().forEach(d=>{
     let cls="ok";
-    if(diaria>350)cls="critica";
-    else if(diaria>200)cls="alerta";
+    if(d.saldo < 200) cls="alerta";
+    if(d.saldo < 100) cls="critica";
 
-    const ini=new Date(k), fim=new Date(ini);fim.setDate(fim.getDate()+6);
-
-    hist.innerHTML+=`
+    hist.innerHTML += `
       <div class="card ${cls}">
-        <strong>${ini.toLocaleDateString("pt-BR")} → ${fim.toLocaleDateString("pt-BR")}</strong>
-        <div class="line"><span>Entradas</span><span>${e.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</span></div>
-        <div class="line"><span>Saídas</span><span>${s.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</span></div>
-        <div class="line"><strong>Saldo</strong><strong>${saldo.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</strong></div>
-        <div class="line"><span>Média diária</span><span>${diaria.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</span></div>
-      </div>`;
+        <strong>${d.data.split("-").reverse().join("/")}</strong>
+        <div class="line"><span>Entradas</span><span>${moeda(d.entradas)}</span></div>
+        <div class="line"><span>Saídas</span><span>${moeda(d.saidas)}</span></div>
+        <div class="line"><strong>Saldo</strong><strong>${moeda(d.saldo)}</strong></div>
+      </div>
+    `;
   });
 })();
 </script>
 
 </body>
 </html>
-
-
