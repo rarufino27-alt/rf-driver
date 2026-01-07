@@ -10,27 +10,16 @@
 
 <style>
 :root{
-  --gold:#f5c542;
-  --bg:#0d0d0d;
-  --text:#f4f4f4;
-  --card:#161616;
-  --border:#242424;
+  --gold:#f5c542;--bg:#0d0d0d;--text:#f4f4f4;
+  --card:#161616;--border:#242424;
 }
 body[data-theme="light"]{
-  --bg:#f4f4f4;
-  --text:#111;
-  --card:#fff;
-  --border:#ddd;
+  --bg:#f4f4f4;--text:#111;--card:#fff;--border:#ddd;
 }
 *{box-sizing:border-box;font-family:Inter}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  padding:70px 16px 150px;
-}
+body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
 
-/* BOTÕES TOPO */
+/* TOPO */
 .drawer-toggle,.theme-toggle{
   position:fixed;top:15px;font-size:22px;color:var(--gold);
   cursor:pointer;z-index:20
@@ -48,14 +37,7 @@ body{
 .drawer a{
   display:flex;gap:12px;padding:14px 20px;
   color:var(--text);text-decoration:none;
-  border-bottom:1px solid var(--border);
-  fonte-size:15px
-}
-.suporte-whatsapp{
-  margin:16px;padding:10px 14px;background:#25d366;
-  color:#fff;border-radius:999px;text-align:center;
-  font-weight:600;text-decoration:none;
-  display:flex;align-items:center;justify-content:center;gap:8px
+  border-bottom:1px solid var(--border);font-size:15px
 }
 
 /* HEADER */
@@ -74,19 +56,15 @@ body{
 
 /* CARD */
 .card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:16px;
-  margin-bottom:15px
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:16px;margin-bottom:15px
 }
 label{font-size:13px;margin-top:10px;display:block}
-input,select,textarea{
+input{
   width:100%;padding:11px;margin-top:6px;
   border-radius:10px;border:1px solid var(--border);
   background:var(--bg);color:var(--text)
 }
-textarea{min-height:90px}
 button{
   width:100%;padding:12px;margin-top:14px;
   background:var(--gold);border:none;
@@ -99,18 +77,15 @@ button{
   padding:12px;border-radius:12px;
   border:1px solid var(--border);margin-top:10px
 }
-.vehicle-card img{
-  width:70px;height:50px;object-fit:cover;border-radius:8px
-}
 .vehicle-card .v-info{flex:1;font-size:13px}
 
-/* BOTTOM NAV */
+/* BOTTOM */
 .bottom-nav{
   position:fixed;bottom:0;left:0;right:0;
   background:var(--card);border-top:1px solid var(--border);
   display:flex;justify-content:space-around;padding:8px 0
 }
-.bottom-nav a{color:var(--text);font-size:15px;text-decoration:none}
+.bottom-nav a{color:var(--text)}
 .center-btn{
   background:var(--gold);color:#000;width:58px;height:58px;
   border-radius:50%;display:flex;align-items:center;
@@ -121,25 +96,12 @@ button{
 
 <body>
 
-<div class="drawer-toggle" onclick="toggleDrawer()">
-  <i class="fa fa-bars"></i>
-</div>
-<div class="theme-toggle" onclick="toggleTheme()">
-  <i class="fa fa-moon"></i>
-</div>
+<div class="drawer-toggle" onclick="drawer.classList.toggle('open')"><i class="fa fa-bars"></i></div>
+<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
 
 <nav class="drawer" id="drawer">
-  <div class="close-btn" onclick="toggleDrawer()">
-    <i class="fa fa-xmark"></i>
-  </div>
-  <a href="perfil.html"><i class="fa fa-user"></i></a>
+  <a href="perfil.html"><i class="fa fa-user"></i> Perfil</a>
   <a href="instalar-app.html"><i class="fa fa-download"></i> Como Instalar App</a>
-  <a </a>
-  <a class="suporte-whatsapp"
-     href="https://wa.me/5581992716132?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20com%20o%20RF%20Driver."
-     target="_blank">
-    <i class="fa-brands fa-whatsapp"></i> Suporte WhatsApp
-  </a>
 </nav>
 
 <div class="header">
@@ -153,46 +115,34 @@ button{
   <div class="tab-btn" data-tab="financeiro">Financeiro</div>
 </div>
 
-<!-- ===== ABA PESSOAL ===== -->
+<!-- PESSOAL -->
 <div id="pessoal" class="card">
-  <label>Nome</label>
-  <input id="pNome">
-  <label>Telefone</label>
-  <input id="pTelefone">
-  <label>CPF</label>
-  <input id="pCpf">
-  <label>Cidade / Estado</label>
-  <input id="pCidade">
+  <label>Nome</label><input id="pNome">
+  <label>Telefone</label><input id="pTelefone">
+  <label>CPF</label><input id="pCpf">
+  <label>Cidade / Estado</label><input id="pCidade">
   <button onclick="salvarPessoal()">Salvar dados</button>
 </div>
 
-<!-- ===== ABA VEÍCULOS ===== -->
+<!-- VEÍCULOS -->
 <div id="veiculos" class="card" style="display:none">
-  <label>Marca</label>
-  <input id="vMarca">
-  <label>Modelo</label>
-  <input id="vModelo">
+  <label>Marca</label><input id="vMarca">
+  <label>Modelo</label><input id="vModelo">
   <button onclick="salvarVeiculo()">Adicionar veículo</button>
   <div id="listaVeiculos"></div>
 </div>
 
-<!-- ===== ABA FINANCEIRO ===== -->
+<!-- FINANCEIRO -->
 <div id="financeiro" class="card" style="display:none">
-  <label>Banco</label>
-  <input id="fBanco">
-  <label>Chave PIX</label>
-  <input id="fChavePix">
+  <label>Banco</label><input id="fBanco">
+  <label>Chave PIX</label><input id="fChavePix">
   <button onclick="salvarFinanceiro()">Salvar financeiro</button>
 </div>
 
 <nav class="bottom-nav">
   <a href="planos.html"><i class="fa fa-crown"></i></a>
   <a href="entradas.html"><i class="fa fa-cash-register"></i></a>
-
-  <a href="index.html" class="center-btn">
-    <i class="fa fa-house"></i>
-  </a>
- 
+  <a href="index.html" class="center-btn"><i class="fa fa-house"></i></a>
   <a href="carteira.html"><i class="fa fa-wallet"></i></a>
   <a href="resumo.html"><i class="fa fa-file"></i></a>
 </nav>
@@ -200,57 +150,12 @@ button{
 <script src="dataManager.js"></script>
 
 <script>
-(function(){
-
-  // Segurança máxima
-  if(
-    typeof PlanoManager === "undefined" ||
-    typeof PlanoManager.getPlano !== "function"
-  ){
-    return;
-  }
-
-  const paginaAtual =
-    (window.location.pathname.split("/").pop() || "index.html").toLowerCase();
-
-  const plano = PlanoManager.getPlano();
-
-  // Libera sempre a página de planos
-  if(paginaAtual === "planos.html"){
-    return;
-  }
-
-  // Durante as 36h de teste: TUDO liberado
-  if(plano === "freemium" && PlanoManager.isTesteAtivo()){
-    return;
-  }
-
-  // Após o teste: restringe freemium
-  if(plano === "freemium"){
-
-    const paginasLiberadas = (window.PaginasLiberadasFreemium || ["entradas.html"])
-      .map(p => p.toLowerCase());
-
-    if(!paginasLiberadas.includes(paginaAtual)){
-      window.location.replace("planos.html");
-    }
-  }
-
-})();
-</script>
-
-<script>
 /* TEMA */
-(function(){
-  document.body.dataset.theme = localStorage.getItem("tema") || "dark"
-})();
+document.body.dataset.theme = DataManager.getTema();
 function toggleTheme(){
-  const t = document.body.dataset.theme==="light"?"dark":"light";
-  document.body.dataset.theme=t;
-  localStorage.setItem("tema",t);
-}
-function toggleDrawer(){
-  document.getElementById("drawer").classList.toggle("open");
+  const t = DataManager.getTema()==="light"?"dark":"light";
+  DataManager.setTema(t);
+  document.body.dataset.theme = t;
 }
 
 /* TABS */
@@ -265,36 +170,51 @@ document.querySelectorAll(".tab-btn").forEach(btn=>{
   };
 });
 
-/* STORAGE */
-function salvarPessoal(){
-  localStorage.setItem("perfilPessoalRF",JSON.stringify({
-    nome:pNome.value,telefone:pTelefone.value,cpf:pCpf.value,cidade:pCidade.value
-  }));
-  alert("Dados salvos");
-}
-function salvarVeiculo(){
-  const arr = JSON.parse(localStorage.getItem("veiculosRF")||"[]");
-  arr.push({marca:vMarca.value,modelo:vModelo.value});
-  localStorage.setItem("veiculosRF",JSON.stringify(arr));
+/* PERFIL */
+function carregarPerfil(){
+  const p = DataManager.getPerfil();
+  pNome.value=p.pessoal.nome||"";
+  pTelefone.value=p.pessoal.telefone||"";
+  pCpf.value=p.pessoal.cpf||"";
+  pCidade.value=p.pessoal.cidade||"";
+  fBanco.value=p.financeiro.banco||"";
+  fChavePix.value=p.financeiro.pix||"";
   renderVeiculos();
 }
-function renderVeiculos(){
-  const arr = JSON.parse(localStorage.getItem("veiculosRF")||"[]");
-  listaVeiculos.innerHTML = arr.map(v=>`
-    <div class="vehicle-card">
-      <div class="v-info"><strong>${v.marca}</strong> ${v.modelo}</div>
-    </div>`).join("");
+
+function salvarPessoal(){
+  DataManager.setPerfilPessoal({
+    nome:pNome.value,telefone:pTelefone.value,
+    cpf:pCpf.value,cidade:pCidade.value
+  });
+  alert("Dados salvos");
 }
+
 function salvarFinanceiro(){
-  localStorage.setItem("financeiroRF",JSON.stringify({
+  DataManager.setPerfilFinanceiro({
     banco:fBanco.value,pix:fChavePix.value
-  }));
+  });
   alert("Financeiro salvo");
 }
-renderVeiculos();
+
+function salvarVeiculo(){
+  DataManager.addVeiculo({
+    marca:vMarca.value,modelo:vModelo.value
+  });
+  vMarca.value=vModelo.value="";
+  renderVeiculos();
+}
+
+function renderVeiculos(){
+  const v = DataManager.getPerfil().veiculos;
+  listaVeiculos.innerHTML = v.map(x=>`
+    <div class="vehicle-card">
+      <div class="v-info"><strong>${x.marca}</strong> ${x.modelo}</div>
+    </div>`).join("");
+}
+
+carregarPerfil();
 </script>
 
 </body>
-
 </html>
-
