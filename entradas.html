@@ -10,6 +10,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+/* === ESTILO ORIGINAL PRESERVADO === */
 :root{
   --gold:#f5c542; --bg:#0d0d0d; --text:#f4f4f4;
   --card:#161616; --border:#242424;
@@ -20,109 +21,77 @@ body[data-theme="light"]{
 }
 *{box-sizing:border-box;font-family:Inter}
 body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
-
-/* HEADER */
 .header{text-align:center;margin-bottom:10px}
 .header h1{margin:0;font-size:26px;color:var(--gold)}
 .header small{opacity:.7}
-
-/* TOGGLES */
 .drawer-toggle,.theme-toggle{
-  position:fixed;top:15px;font-size:22px;color:var(--gold);
-  cursor:pointer;z-index:20
+  position:fixed;top:15px;font-size:22px;color:var(--gold);cursor:pointer;z-index:20
 }
-.drawer-toggle{left:15px}
-.theme-toggle{right:15px}
-
-/* DRAWER */
+.drawer-toggle{left:15px}.theme-toggle{right:15px}
 .drawer{
   position:fixed;top:0;left:-260px;width:260px;height:100%;
   background:var(--card);border-right:1px solid var(--border);
   padding-top:20px;transition:.3s;z-index:15
 }
 .drawer.open{left:0}
-.drawer a{
-  display:flex;gap:12px;padding:14px 20px;
-  color:var(--text);font-size:15px;
-  text-decoration:none;border-bottom:1px solid var(--border)
-}
-.drawer .close-btn{
-  text-align:right;padding:10px 20px;cursor:pointer
-}
-
-/* CARDS */
+.drawer a{display:flex;gap:12px;padding:14px 20px;color:var(--text);fonte-size:15px;text-decoration:none;border-bottom:1px solid var(--border)}
 .card,.summary{
   background:var(--card);border:1px solid var(--border);
   border-radius:14px;padding:16px;margin-bottom:15px
 }
 .summary-row{display:flex;justify-content:space-between;font-weight:600}
-
-/* TABS */
 .tab-buttons{display:flex;gap:8px;margin-bottom:10px}
 .tab-btn{
-  flex:1;padding:12px;border-radius:12px;
-  border:1px solid var(--border);
-  background:var(--card);color:var(--text);
-  opacity:.6;font-weight:600;cursor:pointer
+  flex:1;padding:12px;border-radius:12px;border:1px solid var(--border);
+  background:var(--card);color:var(--text);opacity:.6;font-weight:600
 }
 .tab-btn.active{opacity:1;border-color:var(--gold);color:var(--gold)}
-
-.tab{display:none}
-
-/* INPUTS */
-input,select{
-  width:100%;padding:12px;margin-bottom:10px;
-  border-radius:10px;border:1px solid var(--border);
-  background:var(--bg);color:var(--text)
-}
-
-/* TABLE */
+input,select{width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text)}
 table{width:100%;border-collapse:collapse}
 td{padding:10px;border-bottom:1px solid var(--border)}
 .del{color:var(--red);cursor:pointer;font-weight:700}
-
-/* FOOTER ACTION */
-.footer-action{
-  position:fixed;
-  bottom:90px;
-  left:16px;
-  right:16px;
-}
-
-/* BOTTOM NAV */
+.footer-action{position center:;bottom:90px;left:16px;right:16px}
 .bottom-nav{
-  position:fixed;bottom:0;left:0;right:0;
-  background:var(--card);
-  display:flex;justify-content:space-around;padding:8px 0
+  position:fixed;bottom:0;left:0;right:0;background:var(--card);
+  border-top:0px solid var(--border);display:flex;justify-content:space-around;padding:8px 0
 }
 .bottom-nav a{color:var(--text);font-size:15px;text-decoration:none}
 .center-btn{
-  background:var(--gold);color:#000;width:58px;height:58px;
-  border-radius:50%;display:flex;align-items:center;
-  justify-content:center;font-size:24px;margin-top:-30px
+  background:var(--gold);color:#000;width:58px;height:58px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:24px;margin-top:-30px
 }
 
 .suporte-whatsapp{
-  margin:16px;padding:10px 14px;background:#25d366;color:#fff;
-  border-radius:999px;text-align:center;font-weight:600;
-  text-decoration:none;display:flex;align-items:center;
-  justify-content:center;gap:8px
+  margin:16px;
+  padding:10px 14px;
+  background:#25d366;
+  color:#fff;
+  border-radius:999px;
+  text-align:center;
+  font-weight:600;
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
+<div class="drawer-toggle" onclick="drawer.classList.toggle('open')"><i class="fa fa-bars"></i></div>
 <div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
 
 <nav class="drawer" id="drawer">
-  <div class="close-btn" onclick="toggleDrawer()"><i class="fa fa-xmark"></i></div>
-
+  <div class="close-btn" onclick="toggleDrawer()">
+    <i class="fa fa-xmark"></i>
+  </div>
+  <a href="perfil.html"><i class="fa fa-user">Perfil</i> </a>
   <a href="instalar-app.html"><i class="fa fa-download"></i> Como Instalar App</a>
-
+  <a </a>
   <a class="suporte-whatsapp"
-     href="https://wa.me/5581992716132"
+     href="https://wa.me/5581992716132?text=Ol%C3%A1%2C%20preciso%20de%20ajuda%20com%20o%20RF%20Driver."
      target="_blank">
     <i class="fa-brands fa-whatsapp"></i> Suporte WhatsApp
   </a>
@@ -141,14 +110,22 @@ td{padding:10px;border-bottom:1px solid var(--border)}
 </div>
 
 <div class="card">
-  <button onclick="fecharCaixa()" style="background:var(--green);font-weight:700;width:100%;padding:14px;border-radius:12px;border:none">
+  <button onclick="fecharCaixa()" style="
+    background:var(--green);
+    color:#000;
+    font-weight:700;
+    padding:14px;
+    border-radius:12px;
+    border:none;
+    width:100%;
+  ">
     🔒 Fechar Caixa do Dia
   </button>
 </div>
 
 <div class="tab-buttons">
-  <button class="tab-btn active" data-tab="corridas">Corridas</button>
   <button class="tab-btn" data-tab="outras">Outras Entradas</button>
+  <button class="tab-btn active" data-tab="corridas">Corridas</button>
   <button class="tab-btn" data-tab="saidas">Saídas</button>
 </div>
 
@@ -165,160 +142,140 @@ td{padding:10px;border-bottom:1px solid var(--border)}
   <table><tbody id="listaCorridas"></tbody></table>
 </div>
 
-<div class="card tab" id="outras">
+<div class="card tab" id="outras" style="display:none">
   <input id="descOutra" placeholder="Descrição">
   <input id="valorOutra" type="number" placeholder="Valor (R$)">
   <table><tbody id="listaOutras"></tbody></table>
 </div>
 
-<div class="card tab" id="saidas">
+<div class="card tab" id="saidas" style="display:none">
   <select id="tipoSaida">
-    <option>Combustível</option><option>Alimentação</option>
-    <option>Pedágio</option><option>Outros</option>
+    <option>Combustível</option><option>Alimentação</option><option>Pedágio</option><option>Outros</option>
   </select>
   <input id="valorSaida" type="number" placeholder="Valor (R$)">
   <table><tbody id="listaSaidas"></tbody></table>
 </div>
 
 <div class="footer-action">
-  <button onclick="registrar()" style="width:100%;padding:14px;border:none;border-radius:12px;background:var(--gold);font-weight:700">
-    Registrar
-  </button>
+  <button onclick="registrar()">Registrar</button>
 </div>
 
 <nav class="bottom-nav">
-  <a href="planos.html"><i class="fa fa-crown"></i></a>
-  <a href="perfil.html"><i class="fa fa-user"></i></a>
+  <a href="planos.html"><i class="fa fa-crown"></i> </a>
+  <a href="entradas.html"><i class="fa fa-cash-register"></i></a>
 
+  <!-- BOTÃO CENTRAL (DASHBOARD) -->
   <a href="index.html" class="center-btn">
     <i class="fa fa-house"></i>
   </a>
-  
-  <a href="entradas.html"><i class="fa fa-cash-register"></i></a>
-  <a href="carteira.html"><i class="fa fa-wallet"></i></a>
+
   <a href="resumo.html"><i class="fa fa-file"></i></a>
+  <a href="carteira.html"><i class="fa fa-wallet"></i> </a>
 </nav>
 
 <script src="dataManager.js"></script>
 
 <script>
-(function(){
-  document.body.dataset.theme = localStorage.getItem("tema") || "dark";
-})();
-
+/* ===== TEMA ===== */
+(function(){document.body.dataset.theme=localStorage.getItem("tema")||"dark"})()
 function toggleTheme(){
-  const t = document.body.dataset.theme==="light"?"dark":"light";
-  document.body.dataset.theme=t;
-  localStorage.setItem("tema",t);
-}
-function toggleDrawer(){
-  document.getElementById("drawer").classList.toggle("open");
+ const t=document.body.dataset.theme==="light"?"dark":"light"
+ document.body.dataset.theme=t;localStorage.setItem("tema",t)
 }
 
-/* DADOS */
-let dados = JSON.parse(localStorage.getItem("rf_caixa")) || {entradas:[],saidas:[]};
+/* ===== DADOS ===== */
+let dados=JSON.parse(localStorage.getItem("rf_caixa"))||{entradas:[],saidas:[]}
 
-/* GRÁFICO */
-const grafico = new Chart(document.getElementById("grafico"),{
-  type:"bar",
-  data:{labels:["Entradas","Saídas"],datasets:[{data:[0,0],backgroundColor:["#1DB954","#ff3b30"]}]},
-  options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
-});
+/* ===== GRÁFICO ===== */
+const ctx=document.getElementById("grafico").getContext("2d")
+const grafico=new Chart(ctx,{
+ type:"bar",
+ data:{labels:["Entradas","Saídas"],datasets:[{data:[0,0],backgroundColor:["#1DB954","#ff3b30"]}]},
+ options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+})
 
-/* SUBTIPOS */
+/* ===== SUBTIPOS ===== */
 tipoCorrida.onchange=()=>{
-  subTipo.innerHTML="";
-  subTipo.style.display="none";
-  let ops=[];
-  if(tipoCorrida.value==="App") ops=["Uber","99","InDrive"];
-  if(tipoCorrida.value==="Entrega") ops=["iFood","99Food","Uber Entregas","Rappi","Outros"];
-  if(ops.length){
-    subTipo.style.display="block";
-    ops.forEach(o=>subTipo.innerHTML+=`<option>${o}</option>`);
-  }
-};
+ subTipo.style.display="none";subTipo.innerHTML=""
+ let ops=[]
+ if(tipoCorrida.value==="App") ops=["Uber","99","InDrive"]
+ if(tipoCorrida.value==="Entrega") ops=["iFood","99Food","Uber Entregas","Rappi","Outros"]
+ if(ops.length){subTipo.style.display="block";ops.forEach(o=>subTipo.innerHTML+=`<option>${o}</option>`)}
+}
 
-/* ATUALIZA */
+/* ===== ATUALIZA ===== */
 function atualizar(){
-  const ent = dados.entradas.reduce((s,i)=>s+Number(i.valor||0),0);
-  const sai = dados.saidas.reduce((s,i)=>s+Number(i.valor||0),0);
-
-  resEntradas.textContent = ent.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-  resSaidas.textContent = sai.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-  resSaldo.textContent = (ent-sai).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-
-  grafico.data.datasets[0].data=[ent,sai];
-  grafico.update();
-
-  localStorage.setItem("rf_caixa",JSON.stringify(dados));
-  localStorage.setItem("rf_caixa_total_entradas",ent);
-  localStorage.setItem("rf_caixa_total_saidas",sai);
+ const ent=dados.entradas.reduce((s,i)=>s+i.valor,0)
+ const sai=dados.saidas.reduce((s,i)=>s+i.valor,0)
+ resEntradas.textContent=ent.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})
+ resSaidas.textContent=sai.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})
+ resSaldo.textContent=(ent-sai).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})
+ grafico.data.datasets[0].data=[ent,sai];grafico.update()
+ localStorage.setItem("rf_caixa",JSON.stringify(dados))
+ localStorage.setItem("rf_caixa_total_entradas",ent)
+ localStorage.setItem("rf_caixa_total_saidas",sai)
 }
 
-/* RENDER */
-function render(){
-  listaCorridas.innerHTML = dados.entradas.map((e,i)=>`
-    <tr>
-      <td>${e.desc}</td>
-      <td>${Number(e.valor).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</td>
-      <td class="del" onclick="del('entradas',${i})">✕</td>
-    </tr>`).join("");
-
-  listaOutras.innerHTML = "";
-  listaSaidas.innerHTML = dados.saidas.map((e,i)=>`
-    <tr>
-      <td>${e.desc}</td>
-      <td>${Number(e.valor).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</td>
-      <td class="del" onclick="del('saidas',${i})">✕</td>
-    </tr>`).join("");
-}
-
+/* ===== REGISTRO / EXCLUSÃO ===== */
 function registrar(){
-  if(corridas.style.display!=="none"){
-    if(!valorCorrida.value) return alert("Informe o valor.");
-    dados.entradas.push({
-      desc: tipoCorrida.value+(subTipo.value?" - "+subTipo.value:""),
-      valor: Number(valorCorrida.value)
-    });
-    valorCorrida.value="";
-  }
-  if(outras.style.display!=="none"){
-    if(!valorOutra.value) return alert("Informe o valor.");
-    dados.entradas.push({desc:descOutra.value,valor:Number(valorOutra.value)});
-    descOutra.value=valorOutra.value="";
-  }
-  if(saidas.style.display!=="none"){
-    if(!valorSaida.value) return alert("Informe o valor.");
-    dados.saidas.push({desc:tipoSaida.value,valor:Number(valorSaida.value)});
-    valorSaida.value="";
-  }
-  render();atualizar();
+ if(corridas.style.display!=="none"){
+  dados.entradas.push({desc:tipoCorrida.value+(subTipo.value?" - "+subTipo.value:""),valor:+valorCorrida.value})
+ }
+ if(outras.style.display!=="none"){
+  dados.entradas.push({desc:descOutra.value,valor:+valorOutra.value})
+ }
+ if(saidas.style.display!=="none"){
+  dados.saidas.push({desc:tipoSaida.value,valor:+valorSaida.value})
+ }
+ render();atualizar()
 }
-
-function del(tipo,i){
-  dados[tipo].splice(i,1);
-  render();atualizar();
+function del(tipo,i){dados[tipo].splice(i,1);render();atualizar()}
+function render(){
+ listaCorridas.innerHTML=dados.entradas.map((e,i)=>`<tr><td>${e.desc}</td><td>${e.valor}</td><td class="del" onclick="del('entradas',${i})">✕</td></tr>`).join("")
+ listaSaidas.innerHTML=dados.saidas.map((e,i)=>`<tr><td>${e.desc}</td><td>${e.valor}</td><td class="del" onclick="del('saidas',${i})">✕</td></tr>`).join("")
 }
+document.querySelectorAll(".tab-btn").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll(".tab-btn").forEach(x=>x.classList.remove("active"))
+ b.classList.add("active")
+ document.querySelectorAll(".tab").forEach(t=>t.style.display="none")
+ document.getElementById(b.dataset.tab).style.display="block"
+})
+render();atualizar()
+</script>
 
-/* TABS */
-document.querySelectorAll(".tab-btn").forEach(btn=>{
-  btn.onclick=()=>{
-    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    document.querySelectorAll(".tab").forEach(t=>t.style.display="none");
-    document.getElementById(btn.dataset.tab).style.display="block";
-  };
-});
+<script>
+function fecharCaixa() {
+  const ent = dados.entradas.reduce((s,i)=>s + Number(i.valor || 0), 0);
+  const sai = dados.saidas.reduce((s,i)=>s + Number(i.valor || 0), 0);
+  const saldo = ent - sai;
 
-/* FECHAR CAIXA */ function fecharCaixa(){ const ent = dados.entradas.reduce((s,i)=>s+Number(i.valor||0),0); const sai = dados.saidas.reduce((s,i)=>s+Number(i.valor||0),0); const saldo = ent - sai; if(saldo<=0) return alert("Saldo zerado ou negativo."); if(!confirm(`Fechar o caixa e enviar ${saldo.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})} para a carteira?`)) return;
-const resp = DataManager.adicionarSaldoCarteira(saldo); if(!resp.ok) return alert(resp.msg||"Erro ao fechar caixa."); localStorage.removeItem("rf_caixa"); localStorage.removeItem("rf_caixa_total_entradas"); localStorage.removeItem("rf_caixa_total_saidas"); alert("Caixa fechado com sucesso."); location.reload();
-render();
-atualizar();
+  if (saldo <= 0) {
+    alert("Saldo zerado ou negativo. Nada para transferir.");
+    return;
+  }
+
+  if (!confirm(`Fechar o caixa e enviar R$ ${saldo.toFixed(2)} para a carteira?`)) {
+    return;
+  }
+
+  const resp = DataManager.adicionarSaldoCarteira(saldo);
+
+  if (!resp.ok) {
+    alert(resp.msg || "Erro ao fechar caixa.");
+    return;
+  }
+
+  // LIMPA DEFINITIVAMENTE O CAIXA
+  localStorage.removeItem("rf_caixa");
+  localStorage.removeItem("rf_caixa_total_entradas");
+  localStorage.removeItem("rf_caixa_total_saidas");
+
+  alert("Caixa fechado com sucesso. O caixa será reiniciado.");
+
+  // 🔥 GARANTE RESET TOTAL DO ESTADO
+  location.reload();
+}
 </script>
 
 </body>
 </html>
-
-
-
-
