@@ -1,93 +1,108 @@
 (function(){
 
-const STORAGE_KEY = "rfdriver_data";
+const read = (k,d)=>JSON.parse(localStorage.getItem(k)) ?? d;
+const write = (k,v)=>localStorage.setItem(k,JSON.stringify(v));
 
-function load(){
-  return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
-    configuracoes: { tema: "dark" },
+const DB_KEY = "rfdriver_db";
+
+function getDB(){
+  return read(DB_KEY,{
     agendamentos: [],
     caixaAtual: [],
     caixaDiario: [],
-    carteiraSaldo: 0
-  };
+    carteiraSaldo: 0,
+    configuracoes: { tema:"dark" }
+  });
 }
 
-function save(data){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+function saveDB(db){
+  write(DB_KEY,db);
 }
 
 window.DataManager = {
 
-  /* ================= CONFIG ================= */
-  getTema(){
-    return this.getData().configuracoes.tema || "dark";
+  /* ===== BÁSICO (COMPATÍVEL COM O ANTIGO) ===== */
+  get(key, def=[]){
+    return read(key, def);
   },
 
-  setTema(tema){
-    const d = this.getData();
-    d.configuracoes.tema = tema;
-    save(d);
+  set(key, value){
+    write(key, value);
   },
 
-  /* ================= CORE ================= */
-  getData(){
-    return load();
+  add(key, item){
+    const data = read(key, []);
+    data.push(item);
+    write(key, data);
   },
 
-  saveData(data){
-    save(data);
+  remove(key, index){
+    const data = read(key, []);
+    data.splice(index,1);
+    write(key, data);
   },
 
-  /* ================= AGENDAMENTOS ================= */
+  /* ===== AGENDAMENTOS ===== */
   listarAgendamentos(){
-    return this.getData().agendamentos || [];
+    return getDB().agendamentos;
   },
 
-  adicionarAgendamento(ag){
-    const d = this.getData();
-    d.agendamentos.push(ag);
-    save(d);
+  adicionarAgendamento(item){
+    const db = getDB();
+    db.agendamentos.push(item);
+    saveDB(db);
   },
 
   removerAgendamento(id){
-    const d = this.getData();
-    d.agendamentos = d.agendamentos.filter(a=>a.id!==id);
-    save(d);
+    const db = getDB();
+    db.agendamentos = db.agendamentos.filter(a=>a.id!==id);
+    saveDB(db);
   },
 
-  /* ================= CAIXA ================= */
-  getCaixaAtual(){
-    return this.getData().caixaAtual || [];
+  /* ===== CAIXA ===== */
+  getCaixa(){
+    return getDB().caixaAtual;
   },
 
-  salvarCaixaAtual(lista){
-    const d = this.getData();
-    d.caixaAtual = lista;
-    save(d);
+  salvarCaixa(lista){
+    const db = getDB();
+    db.caixaAtual = lista;
+    saveDB(db);
   },
 
   fecharCaixa(registro){
-    const d = this.getData();
-    d.caixaDiario.push(registro);
-    d.caixaAtual = [];
-    d.carteiraSaldo += registro.saldo;
-    save(d);
+    const db = getDB();
+    db.caixaDiario.push(registro);
+    db.carteiraSaldo += registro.saldo;
+    db.caixaAtual = [];
+    saveDB(db);
   },
 
   listarCaixaDiario(){
-    return this.getData().caixaDiario || [];
+    return getDB().caixaDiario;
   },
 
-  /* ================= CARTEIRA ================= */
+  /* ===== CARTEIRA ===== */
   getSaldoCarteira(){
-    return this.getData().carteiraSaldo || 0;
+    return getDB().carteiraSaldo || 0;
   },
 
   limparCarteira(){
-    const d = this.getData();
-    d.carteiraSaldo = 0;
-    d.caixaDiario = [];
-    save(d);
+    const db = getDB();
+    db.carteiraSaldo = 0;
+    db.caixaDiario = [];
+    saveDB(db);
+  },
+
+  /* ===== CONFIG ===== */
+  getTema(){
+    return getDB().configuracoes.tema || "dark";
+  },
+
+  setTema(t){
+    const db = getDB();
+    db.configuracoes.tema = t;
+    saveDB(db);
   }
 
 };
