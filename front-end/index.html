@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RF Driver — Controle Diário</title>
+<title>RF Driver — Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -29,44 +29,34 @@
 <main id="conteudo">
 
   <!-- ===== HERO / SALDO ===== -->
-  <section class="card" style="text-align:center">
-    <h1 style="color:var(--gold);margin-bottom:4px">
-      Meu controle diário
-    </h1>
-    <p style="opacity:.7;font-size:.9rem">
-      Veja rapidamente como está seu dia
-    </p>
+  <section class="card hero-card">
+    <h1 class="hero-title">Meu controle diário</h1>
+    <p class="hero-subtitle">Resumo financeiro do dia</p>
 
-    <div style="margin:22px 0">
-      <div style="font-size:.85rem;opacity:.7">
-        Saldo do dia
-      </div>
-      <div id="dashSaldo"
-           style="font-size:2.4rem;font-weight:900;color:var(--gold)">
-        R$ 0,00
-      </div>
+    <div class="saldo-box">
+      <span>Saldo do dia</span>
+      <strong id="dashSaldo">R$ 0,00</strong>
     </div>
   </section>
 
   <!-- ===== RESUMO ===== -->
   <section class="dashboard-grid">
 
-    <div class="dashboard-box card card-entrada">
+    <div class="dashboard-box card entrada">
       <small>Entradas</small>
       <strong id="dashEntradas">R$ 0,00</strong>
     </div>
 
-    <div class="dashboard-box card card-saida">
+    <div class="dashboard-box card saida">
       <small>Saídas</small>
       <strong id="dashSaidas">R$ 0,00</strong>
     </div>
 
   </section>
 
-  <!-- ===== AÇÃO ===== -->
-  <section style="margin-top:22px">
-    <button class="btn-primary"
-            onclick="location.href='entradas.html'">
+  <!-- ===== CTA ===== -->
+  <section class="cta-area">
+    <button class="btn-primary" onclick="location.href='entradas.html'">
       Registrar entrada agora
     </button>
   </section>
