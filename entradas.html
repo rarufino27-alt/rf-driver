@@ -121,143 +121,162 @@ button.danger{
 
 <div class="container">
 
-  <div class="card total" id="saldo">Saldo do Dia: R$ 0,00</div>
+  <!-- CONTEÚDO PRINCIPAL -->
+<main class="main-content">
 
-  <div class="tabs">
-    <button class="active" onclick="openTab('corridas')">Corridas</button>
-    <button onclick="openTab('entradas')">Outras Entradas</button>
-    <button onclick="openTab('saidas')">Saídas</button>
-  </div>
+  <section class="page-container">
 
-  <!-- CORRIDAS -->
-  <div class="card tab active" id="corridas">
-    <label>Aplicativo</label>
-    <select id="appCorrida">
-      <option>Uber</option>
-      <option>99</option>
-      <option>InDriver</option>
-      <option>iFood</option>
-      <option>Uber Eats</option>
-      <option>99Food</option>
-      <option>Outros Aplicativos</option>
-    </select>
-
-    <label>Valor</label>
-    <input type="number" id="valorCorrida" placeholder="R$">
-
-    <button class="action" onclick="registrarCorrida()">Registrar Corrida</button>
-  </div>
-
-  <!-- OUTRAS ENTRADAS -->
-  <div class="card tab" id="entradas">
-    <label>Descrição</label>
-    <input type="text" id="descEntrada">
-
-    <label>Valor</label>
-    <input type="number" id="valorEntrada">
-
-    <button class="action" onclick="registrarEntrada()">Registrar Entrada</button>
-  </div>
-
-  <!-- SAÍDAS -->
-  <div class="card tab" id="saidas">
-    <label>Tipo de Saída</label>
-    <select id="tipoSaida" onchange="toggleDescricaoSaida()">
-      <option>Café da manhã</option>
-      <option>Almoço</option>
-      <option>Janta</option>
-      <option>Lanche</option>
-      <option>Serviços do carro</option>
-      <option>IPVA</option>
-      <option>Outras taxas</option>
-      <option>Pagamentos pessoais</option>
-      <option>Outros</option>
-    </select>
-
-    <div id="descSaidaBox" style="display:none">
-      <label>Descrição</label>
-      <input type="text" id="descSaida">
+    <!-- SALDO -->
+    <div class="card total-card" id="saldo">
+      Saldo do Dia: R$ 0,00
     </div>
 
-    <label>Valor</label>
-    <input type="number" id="valorSaida">
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="openTab('corridas', this)">Corridas</button>
+      <button class="tab-btn" onclick="openTab('entradas', this)">Outras Entradas</button>
+      <button class="tab-btn" onclick="openTab('saidas', this)">Saídas</button>
+    </div>
 
-    <button class="action danger" onclick="registrarSaida()">Registrar Saída</button>
-  </div>
+    <!-- CORRIDAS -->
+    <div class="card tab-content active" id="corridas">
+      <label>Aplicativo</label>
+      <select id="appCorrida">
+        <option>Uber</option>
+        <option>99</option>
+        <option>InDriver</option>
+        <option>iFood</option>
+        <option>Uber Eats</option>
+        <option>99Food</option>
+        <option>Outros Aplicativos</option>
+      </select>
 
-  <div class="card">
-    <h3>Histórico do Dia</h3>
-    <div id="historico"></div>
-  </div>
+      <label>Valor</label>
+      <input type="number" id="valorCorrida" placeholder="R$">
 
-</div>
+      <button class="btn-primary" onclick="registrarCorrida()">Registrar Corrida</button>
+    </div>
 
+    <!-- OUTRAS ENTRADAS -->
+    <div class="card tab-content" id="entradas">
+      <label>Descrição</label>
+      <input type="text" id="descEntrada" placeholder="Ex: Gorjeta">
+
+      <label>Valor</label>
+      <input type="number" id="valorEntrada" placeholder="R$">
+
+      <button class="btn-primary" onclick="registrarEntrada()">Registrar Entrada</button>
+    </div>
+
+    <!-- SAÍDAS -->
+    <div class="card tab-content" id="saidas">
+      <label>Tipo de Saída</label>
+      <select id="tipoSaida" onchange="toggleDescricaoSaida()">
+        <option>Café da manhã</option>
+        <option>Almoço</option>
+        <option>Janta</option>
+        <option>Lanche</option>
+        <option>Serviços do carro</option>
+        <option>IPVA</option>
+        <option>Outras taxas</option>
+        <option>Pagamentos pessoais</option>
+        <option>Outros</option>
+      </select>
+
+      <div id="descSaidaBox" style="display:none">
+        <label>Descrição</label>
+        <input type="text" id="descSaida" placeholder="Detalhe da saída">
+      </div>
+
+      <label>Valor</label>
+      <input type="number" id="valorSaida" placeholder="R$">
+
+      <button class="btn-danger" onclick="registrarSaida()">Registrar Saída</button>
+    </div>
+
+    <!-- HISTÓRICO -->
+    <div class="card">
+      <h3>Histórico do Dia</h3>
+      <div id="historico" class="history-list"></div>
+    </div>
+
+  </section>
+
+</main>
+
+<!-- SCRIPT LIVRO CAIXA -->
 <script>
-let caixa = JSON.parse(localStorage.getItem('caixaHoje')) || [];
+const STORAGE_KEY = 'rfdriver_caixa_hoje';
+let caixa = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
-function salvar(){
-  localStorage.setItem('caixaHoje', JSON.stringify(caixa));
+function salvar() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(caixa));
   atualizar();
 }
 
-function atualizar(){
+function atualizar() {
   let total = 0;
   const hist = document.getElementById('historico');
   hist.innerHTML = '';
 
-  caixa.forEach(i=>{
-    total += i.valor;
+  caixa.forEach(item => {
+    total += item.valor;
     hist.innerHTML += `
       <div class="history-item">
-        <span>${i.tipo}</span>
-        <strong>R$ ${i.valor.toFixed(2)}</strong>
-      </div>`;
+        <span>${item.tipo}</span>
+        <strong>R$ ${item.valor.toFixed(2)}</strong>
+      </div>
+    `;
   });
 
   document.getElementById('saldo').innerText =
     `Saldo do Dia: R$ ${total.toFixed(2)}`;
 }
 
-function registrarCorrida(){
+function registrarCorrida() {
   const app = appCorrida.value;
   const valor = Number(valorCorrida.value);
-  if(!valor) return;
-  caixa.push({tipo:`Corrida - ${app}`, valor});
-  valorCorrida.value='';
+  if (!valor) return;
+
+  caixa.push({ tipo: `Corrida - ${app}`, valor });
+  valorCorrida.value = '';
   salvar();
 }
 
-function registrarEntrada(){
-  const desc = descEntrada.value;
+function registrarEntrada() {
+  const desc = descEntrada.value || 'Entrada';
   const valor = Number(valorEntrada.value);
-  if(!valor) return;
-  caixa.push({tipo:`Entrada - ${desc}`, valor});
-  descEntrada.value='';
-  valorEntrada.value='';
+  if (!valor) return;
+
+  caixa.push({ tipo: `Entrada - ${desc}`, valor });
+  descEntrada.value = '';
+  valorEntrada.value = '';
   salvar();
 }
 
-function registrarSaida(){
+function registrarSaida() {
   const tipo = tipoSaida.value;
-  const desc = descSaida.value;
+  const desc = descSaida.value ? ` - ${descSaida.value}` : '';
   const valor = Number(valorSaida.value);
-  if(!valor) return;
-  caixa.push({tipo:`Saída - ${tipo} ${desc}`, valor:-valor});
-  valorSaida.value='';
-  descSaida.value='';
+  if (!valor) return;
+
+  caixa.push({ tipo: `Saída - ${tipo}${desc}`, valor: -valor });
+  valorSaida.value = '';
+  descSaida.value = '';
   salvar();
 }
 
-function toggleDescricaoSaida(){
-  descSaidaBox.style.display =
+function toggleDescricaoSaida() {
+  document.getElementById('descSaidaBox').style.display =
     tipoSaida.value === 'Outros' ? 'block' : 'none';
 }
 
-function openTab(id){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+function openTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
   document.getElementById(id).classList.add('active');
-  event.target.classList.add('active');
+  btn.classList.add('active');
 }
 
 atualizar();
