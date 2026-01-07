@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dashboard - RF Driver</title>
+<title>RF Driver — Controle Diário</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
@@ -13,6 +13,7 @@
 
 <body>
 
+<!-- TOGGLES -->
 <div class="drawer-toggle" onclick="GlobalUI.toggleDrawer()">
   <i class="fa fa-bars"></i>
 </div>
@@ -21,56 +22,106 @@
   <i class="fa fa-moon"></i>
 </div>
 
+<!-- MENU LATERAL -->
 <div id="menu-lateral"></div>
 
+<!-- CONTEÚDO -->
 <main id="conteudo">
 
-  <!-- ===== DASHBOARD ===== -->
-  <section class="card">
-    <h1 style="color:var(--gold)">Dashboard</h1>
-    <p style="opacity:.7">Resumo financeiro do dia</p>
+  <!-- ===== HERO / SALDO ===== -->
+  <section class="card" style="text-align:center">
+    <h1 style="color:var(--gold);margin-bottom:4px">
+      Meu controle diário
+    </h1>
+    <p style="opacity:.7;font-size:.9rem">
+      Veja rapidamente como está seu dia
+    </p>
 
-    <div class="dashboard-grid">
-      <div class="dashboard-box">
-        <small>Entradas</small>
-        <strong id="dashEntradas">R$ 0,00</strong>
+    <div style="margin:22px 0">
+      <div style="font-size:.85rem;opacity:.7">
+        Saldo do dia
       </div>
-
-      <div class="dashboard-box">
-        <small>Saídas</small>
-        <strong id="dashSaidas">R$ 0,00</strong>
-      </div>
-
-      <div class="dashboard-box destaque">
-        <small>Saldo</small>
-        <strong id="dashSaldo">R$ 0,00</strong>
+      <div id="dashSaldo"
+           style="font-size:2.4rem;font-weight:900;color:var(--gold)">
+        R$ 0,00
       </div>
     </div>
   </section>
 
+  <!-- ===== RESUMO ===== -->
+  <section class="dashboard-grid">
+
+    <div class="dashboard-box card card-entrada">
+      <small>Entradas</small>
+      <strong id="dashEntradas">R$ 0,00</strong>
+    </div>
+
+    <div class="dashboard-box card card-saida">
+      <small>Saídas</small>
+      <strong id="dashSaidas">R$ 0,00</strong>
+    </div>
+
+  </section>
+
+  <!-- ===== AÇÃO ===== -->
+  <section style="margin-top:22px">
+    <button class="btn-primary"
+            onclick="location.href='entradas.html'">
+      Registrar entrada agora
+    </button>
+  </section>
+
 </main>
 
+<!-- MENU INFERIOR -->
 <div id="menu-inferior"></div>
 
+<!-- SCRIPTS -->
 <script src="js/js-dataManager.js"></script>
 <script src="js/js-global.js"></script>
 <script src="js/PlanoManager.js"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  GlobalUI.loadComponent("menu-lateral","components/components-menu-lateral.html");
-  GlobalUI.loadComponent("menu-inferior","components/components-menu-inferior.html");
 
-  const entradas = Number(localStorage.getItem("rf_caixa_total_entradas") || 0);
-  const saidas = Number(localStorage.getItem("rf_caixa_total_saidas") || 0);
+  GlobalUI.loadComponent(
+    "menu-lateral",
+    "components/components-menu-lateral.html"
+  );
+
+  GlobalUI.loadComponent(
+    "menu-inferior",
+    "components/components-menu-inferior.html"
+  );
+
+  const entradas = Number(
+    localStorage.getItem("rf_caixa_total_entradas") || 0
+  );
+
+  const saidas = Number(
+    localStorage.getItem("rf_caixa_total_saidas") || 0
+  );
+
   const saldo = entradas - saidas;
 
   document.getElementById("dashEntradas").innerText =
-    entradas.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+    entradas.toLocaleString("pt-BR",{
+      style:"currency",
+      currency:"BRL"
+    });
+
   document.getElementById("dashSaidas").innerText =
-    saidas.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+    saidas.toLocaleString("pt-BR",{
+      style:"currency",
+      currency:"BRL"
+    });
+
   document.getElementById("dashSaldo").innerText =
-    saldo.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+    saldo.toLocaleString("pt-BR",{
+      style:"currency",
+      currency:"BRL"
+    });
+
 });
 </script>
 
