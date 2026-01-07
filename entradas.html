@@ -1,285 +1,274 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Livro Caixa</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Livro Caixa - RF Driver</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
 <style>
 :root{
-  --bg:#f5f5f5;
-  --card:#ffffff;
-  --text:#222;
-  --primary:#f5c400;
-  --danger:#e74c3c;
-  --border:#ddd;
+  --gold:#f5c542; --bg:#0d0d0d; --text:#f4f4f4;
+  --card:#161616; --border:#242424;
+  --green:#1DB954; --red:#ff3b30;
 }
-
-body.dark{
-  --bg:#121212;
-  --card:#1e1e1e;
-  --text:#f1f1f1;
-  --border:#333;
+body[data-theme="light"]{
+  --bg:#f4f4f4; --text:#111; --card:#fff; --border:#ddd;
 }
+*{box-sizing:border-box;font-family:Inter}
+body{margin:0;background:var(--bg);color:var(--text);padding:70px 16px 150px}
 
-body{
-  margin:0;
-  font-family:Inter, Arial, sans-serif;
-  background:var(--bg);
-  color:var(--text);
-}
+/* HEADER */
+.header{text-align:center;margin-bottom:20px}
+.header h1{margin:0;font-size:32px;color:var(--gold)}
+.header small{opacity:.7}
 
-.container{
-  padding:16px;
-}
-
+/* CARD */
 .card{
   background:var(--card);
-  border-radius:10px;
-  padding:16px;
-  box-shadow:0 2px 6px rgba(0,0,0,.08);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:18px;
   margin-bottom:16px;
 }
 
+/* SALDO */
+.saldo-box{
+  border:2px solid var(--gold);
+  text-align:center;
+}
+.saldo-box h2{
+  margin:10px 0;
+  font-size:34px;
+}
+
+/* TABS */
 .tabs{
   display:flex;
-  gap:8px;
-  margin-bottom:16px;
+  gap:10px;
+  margin-bottom:12px;
 }
-
 .tabs button{
   flex:1;
-  padding:10px;
+  padding:12px;
   border:none;
-  border-radius:8px;
-  background:#ccc;
+  border-radius:12px;
+  background:var(--border);
+  color:var(--text);
   font-weight:600;
-  cursor:pointer;
 }
-
 .tabs button.active{
-  background:var(--primary);
+  background:var(--gold);
+  color:#000;
 }
 
-.tab{
-  display:none;
-}
-
-.tab.active{
-  display:block;
-}
-
-label{
-  display:block;
-  margin-top:10px;
-  font-size:14px;
-}
-
-input, select{
+/* FORM */
+label{font-size:14px;opacity:.8}
+input,select{
   width:100%;
-  padding:10px;
-  margin-top:4px;
-  border-radius:8px;
+  padding:12px;
+  margin-top:6px;
+  margin-bottom:12px;
+  border-radius:12px;
   border:1px solid var(--border);
   background:transparent;
   color:var(--text);
 }
 
-button.action{
-  margin-top:14px;
+/* BUTTONS */
+.btn{
   width:100%;
-  padding:12px;
+  padding:14px;
   border:none;
-  border-radius:10px;
-  background:var(--primary);
+  border-radius:14px;
   font-weight:700;
-  cursor:pointer;
 }
+.btn-primary{background:var(--gold);color:#000}
+.btn-danger{background:var(--red);color:#fff}
 
-button.danger{
-  background:var(--danger);
-  color:#fff;
-}
-
+/* HISTÓRICO */
 .history-item{
   display:flex;
   justify-content:space-between;
   border-bottom:1px solid var(--border);
-  padding:6px 0;
+  padding:8px 0;
   font-size:14px;
 }
 
-.total{
-  font-size:20px;
-  font-weight:700;
-  text-align:center;
+/* DRAWER + NAV (IGUAL AO ORIGINAL) */
+.drawer-toggle,.theme-toggle{
+  position:fixed;top:15px;font-size:22px;
+  color:var(--gold);cursor:pointer;z-index:40
+}
+.drawer-toggle{left:15px}
+.theme-toggle{right:15px}
+
+.drawer{
+  position:fixed;top:0;left:-260px;width:260px;height:100%;
+  background:var(--card);border-right:1px solid var(--border);
+  padding-top:20px;transition:.3s;z-index:30;overflow-y:auto
+}
+.drawer.open{left:0}
+.drawer a{
+  display:flex;gap:12px;
+  padding:14px 20px;
+  color:var(--text);
+  font-size:15px;
+  text-decoration:none;
+  border-bottom:1px solid var(--border)
+}
+.drawer .close-btn{text-align:right;padding:0 20px 10px;cursor:pointer}
+
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--card);
+  display:flex;justify-content:space-around;
+  padding:8px 0
+}
+.bottom-nav a{color:var(--text);font-size:15px;text-decoration:none}
+.center-btn{
+  background:var(--gold);color:#000;
+  width:58px;height:58px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin-top:-30px
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="drawer-toggle" onclick="toggleDrawer()"><i class="fa fa-bars"></i></div>
+<div class="theme-toggle" onclick="toggleTheme()"><i class="fa fa-moon"></i></div>
 
-  <!-- CONTEÚDO PRINCIPAL -->
-<main class="main-content">
+<nav class="drawer" id="drawer">
+  <div class="close-btn" onclick="toggleDrawer()"><i class="fa fa-xmark"></i></div>
+  <a href="perfil.html"><i class="fa fa-user"></i> Perfil</a>
+  <a href="instalar-app.html"><i class="fa fa-download"></i> Como Instalar</a>
+</nav>
 
-  <section class="page-container">
+<div class="header">
+  <h1>Livro Caixa</h1>
+  <small>Controle diário de entradas e saídas</small>
+</div>
 
-    <!-- SALDO -->
-    <div class="card total-card" id="saldo">
-      Saldo do Dia: R$ 0,00
-    </div>
+<div class="card saldo-box">
+  <small>Saldo do Dia</small>
+  <h2 id="saldo">R$ 0,00</h2>
+</div>
 
-    <!-- TABS -->
-    <div class="tabs">
-      <button class="tab-btn active" onclick="openTab('corridas', this)">Corridas</button>
-      <button class="tab-btn" onclick="openTab('entradas', this)">Outras Entradas</button>
-      <button class="tab-btn" onclick="openTab('saidas', this)">Saídas</button>
-    </div>
+<div class="tabs">
+  <button class="active" onclick="openTab('corridas',this)">Corridas</button>
+  <button onclick="openTab('entradas',this)">Outras Entradas</button>
+  <button onclick="openTab('saidas',this)">Saídas</button>
+</div>
 
-    <!-- CORRIDAS -->
-    <div class="card tab-content active" id="corridas">
-      <label>Aplicativo</label>
-      <select id="appCorrida">
-        <option>Uber</option>
-        <option>99</option>
-        <option>InDriver</option>
-        <option>iFood</option>
-        <option>Uber Eats</option>
-        <option>99Food</option>
-        <option>Outros Aplicativos</option>
-      </select>
+<div class="card tab corridas">
+  <label>Aplicativo</label>
+  <select id="appCorrida">
+    <option>Uber</option><option>99</option><option>InDriver</option>
+    <option>iFood</option><option>Uber Eats</option>
+    <option>99Food</option><option>Outros</option>
+  </select>
+  <label>Valor</label>
+  <input type="number" id="valorCorrida">
+  <button class="btn btn-primary" onclick="addEntrada('Corrida')">Registrar Corrida</button>
+</div>
 
-      <label>Valor</label>
-      <input type="number" id="valorCorrida" placeholder="R$">
+<div class="card tab entradas" style="display:none">
+  <label>Descrição</label>
+  <input type="text" id="descEntrada">
+  <label>Valor</label>
+  <input type="number" id="valorEntrada">
+  <button class="btn btn-primary" onclick="addEntrada('Entrada')">Registrar Entrada</button>
+</div>
 
-      <button class="btn-primary" onclick="registrarCorrida()">Registrar Corrida</button>
-    </div>
+<div class="card tab saidas" style="display:none">
+  <label>Tipo</label>
+  <select id="tipoSaida" onchange="toggleOutro()">
+    <option>Café da manhã</option><option>Almoço</option><option>Janta</option>
+    <option>Lanche</option><option>Serviços do carro</option>
+    <option>IPVA</option><option>Pagamentos pessoais</option>
+    <option>Outros</option>
+  </select>
+  <div id="outroBox" style="display:none">
+    <label>Descrição</label>
+    <input type="text" id="descSaida">
+  </div>
+  <label>Valor</label>
+  <input type="number" id="valorSaida">
+  <button class="btn btn-danger" onclick="addSaida()">Registrar Saída</button>
+</div>
 
-    <!-- OUTRAS ENTRADAS -->
-    <div class="card tab-content" id="entradas">
-      <label>Descrição</label>
-      <input type="text" id="descEntrada" placeholder="Ex: Gorjeta">
+<div class="card">
+  <small>Histórico do Dia</small>
+  <div id="historico"></div>
+</div>
 
-      <label>Valor</label>
-      <input type="number" id="valorEntrada" placeholder="R$">
+<nav class="bottom-nav">
+  <a href="planos.html"><i class="fa fa-crown"></i></a>
+  <a href="livro-caixa.html"><i class="fa fa-cash-register"></i></a>
+  <a href="index.html" class="center-btn"><i class="fa fa-house"></i></a>
+  <a href="carteira.html"><i class="fa fa-wallet"></i></a>
+  <a href="resumo.html"><i class="fa fa-file"></i></a>
+</nav>
 
-      <button class="btn-primary" onclick="registrarEntrada()">Registrar Entrada</button>
-    </div>
-
-    <!-- SAÍDAS -->
-    <div class="card tab-content" id="saidas">
-      <label>Tipo de Saída</label>
-      <select id="tipoSaida" onchange="toggleDescricaoSaida()">
-        <option>Café da manhã</option>
-        <option>Almoço</option>
-        <option>Janta</option>
-        <option>Lanche</option>
-        <option>Serviços do carro</option>
-        <option>IPVA</option>
-        <option>Outras taxas</option>
-        <option>Pagamentos pessoais</option>
-        <option>Outros</option>
-      </select>
-
-      <div id="descSaidaBox" style="display:none">
-        <label>Descrição</label>
-        <input type="text" id="descSaida" placeholder="Detalhe da saída">
-      </div>
-
-      <label>Valor</label>
-      <input type="number" id="valorSaida" placeholder="R$">
-
-      <button class="btn-danger" onclick="registrarSaida()">Registrar Saída</button>
-    </div>
-
-    <!-- HISTÓRICO -->
-    <div class="card">
-      <h3>Histórico do Dia</h3>
-      <div id="historico" class="history-list"></div>
-    </div>
-
-  </section>
-
-</main>
-
-<!-- SCRIPT LIVRO CAIXA -->
 <script>
-const STORAGE_KEY = 'rfdriver_caixa_hoje';
-let caixa = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+(function(){document.body.dataset.theme=localStorage.getItem("tema")||"dark"})();
 
-function salvar() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(caixa));
-  atualizar();
+function toggleTheme(){
+  const t=document.body.dataset.theme==="light"?"dark":"light";
+  document.body.dataset.theme=t;localStorage.setItem("tema",t);
 }
+function toggleDrawer(){drawer.classList.toggle("open")}
 
-function atualizar() {
-  let total = 0;
-  const hist = document.getElementById('historico');
-  hist.innerHTML = '';
+const KEY="rfdriver_livro_caixa";
+let dados=JSON.parse(localStorage.getItem(KEY))||[];
 
-  caixa.forEach(item => {
-    total += item.valor;
-    hist.innerHTML += `
-      <div class="history-item">
-        <span>${item.tipo}</span>
-        <strong>R$ ${item.valor.toFixed(2)}</strong>
-      </div>
-    `;
+const moeda=v=>v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+function salvar(){localStorage.setItem(KEY,JSON.stringify(dados));render()}
+
+function render(){
+  let total=0;historico.innerHTML="";
+  dados.forEach(d=>{
+    total+=d.valor;
+    historico.innerHTML+=`<div class="history-item"><span>${d.desc}</span><strong>${moeda(d.valor)}</strong></div>`;
   });
-
-  document.getElementById('saldo').innerText =
-    `Saldo do Dia: R$ ${total.toFixed(2)}`;
+  saldo.textContent=moeda(total);
 }
 
-function registrarCorrida() {
-  const app = appCorrida.value;
-  const valor = Number(valorCorrida.value);
-  if (!valor) return;
-
-  caixa.push({ tipo: `Corrida - ${app}`, valor });
-  valorCorrida.value = '';
+function addEntrada(tipo){
+  const valor=Number(tipo==="Corrida"?valorCorrida.value:valorEntrada.value);
+  if(!valor) return;
+  const desc=tipo==="Corrida"?"Corrida - "+appCorrida.value:descEntrada.value;
+  dados.push({desc,valor});
+  valorCorrida.value=valorEntrada.value=descEntrada.value="";
   salvar();
 }
 
-function registrarEntrada() {
-  const desc = descEntrada.value || 'Entrada';
-  const valor = Number(valorEntrada.value);
-  if (!valor) return;
-
-  caixa.push({ tipo: `Entrada - ${desc}`, valor });
-  descEntrada.value = '';
-  valorEntrada.value = '';
+function addSaida(){
+  const valor=Number(valorSaida.value);
+  if(!valor) return;
+  const desc=tipoSaida.value==="Outros"?descSaida.value:tipoSaida.value;
+  dados.push({desc:"Saída - "+desc,valor:-valor});
+  valorSaida.value=descSaida.value="";
   salvar();
 }
 
-function registrarSaida() {
-  const tipo = tipoSaida.value;
-  const desc = descSaida.value ? ` - ${descSaida.value}` : '';
-  const valor = Number(valorSaida.value);
-  if (!valor) return;
-
-  caixa.push({ tipo: `Saída - ${tipo}${desc}`, valor: -valor });
-  valorSaida.value = '';
-  descSaida.value = '';
-  salvar();
+function toggleOutro(){
+  outroBox.style.display=tipoSaida.value==="Outros"?"block":"none";
 }
 
-function toggleDescricaoSaida() {
-  document.getElementById('descSaidaBox').style.display =
-    tipoSaida.value === 'Outros' ? 'block' : 'none';
+function openTab(tab,btn){
+  document.querySelectorAll(".tab").forEach(t=>t.style.display="none");
+  document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+  document.querySelector("."+tab).style.display="block";
+  btn.classList.add("active");
 }
 
-function openTab(id, btn) {
-  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-
-  document.getElementById(id).classList.add('active');
-  btn.classList.add('active');
-}
-
-atualizar();
+render();
 </script>
 
 </body>
