@@ -120,7 +120,7 @@ td{padding:10px;border-bottom:1px solid var(--border)}
   <div class="close-btn" onclick="toggleDrawer()"><i class="fa fa-xmark"></i></div>
 
   <a href="instalar-app.html"><i class="fa fa-download"></i> Como Instalar App</a>
-  <a </a>
+
   <a class="suporte-whatsapp"
      href="https://wa.me/5581992716132"
      target="_blank">
@@ -310,13 +310,15 @@ document.querySelectorAll(".tab-btn").forEach(btn=>{
   };
 });
 
-/* FECHAR CAIXA */ function fecharCaixa(){ const ent = dados.entradas.reduce((s,i)=>s+Number(i.valor||0),0); const sai = dados.saidas.reduce((s,i)=>s+Number(i.valor||0),0); const saldo = ent - sai; if(saldo<=0) return alert("Saldo zerado ou negativo."); if(!confirm(Fechar o caixa e enviar ${saldo.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})} para a carteira?)) return; const resp = DataManager.adicionarSaldoCarteira(saldo); if(!resp.ok) return alert(resp.msg||"Erro ao fechar caixa."); localStorage.removeItem("rf_caixa"); localStorage.removeItem("rf_caixa_total_entradas"); localStorage.removeItem("rf_caixa_total_saidas"); alert("Caixa fechado com sucesso."); location.reload();
+/* FECHAR CAIXA */ function fecharCaixa(){ const ent = dados.entradas.reduce((s,i)=>s+Number(i.valor||0),0); const sai = dados.saidas.reduce((s,i)=>s+Number(i.valor||0),0); const saldo = ent - sai; if(saldo<=0) return alert("Saldo zerado ou negativo."); if(!confirm(`Fechar o caixa e enviar ${saldo.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})} para a carteira?`)) return;
+const resp = DataManager.adicionarSaldoCarteira(saldo); if(!resp.ok) return alert(resp.msg||"Erro ao fechar caixa."); localStorage.removeItem("rf_caixa"); localStorage.removeItem("rf_caixa_total_entradas"); localStorage.removeItem("rf_caixa_total_saidas"); alert("Caixa fechado com sucesso."); location.reload();
 render();
 atualizar();
 </script>
 
 </body>
 </html>
+
 
 
 
