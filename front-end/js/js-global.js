@@ -24,3 +24,49 @@
   }
 
 })();
+
+// ================================
+// 🔐 PROTEÇÃO GLOBAL RF DRIVER
+// ================================
+
+(function(){
+
+  const paginaAtual = location.pathname.split("/").pop();
+
+  // Páginas públicas
+  const paginasPublicas = [
+    "login.html",
+    "cadastro.html"
+  ];
+
+  // Se for página pública, libera
+  if(paginasPublicas.includes(paginaAtual)) return;
+
+  // Verifica login
+  const logado = localStorage.getItem("rf_usuario_logado");
+
+  if(!logado){
+    location.replace("login.html");
+    return;
+  }
+
+  // ===== CONTROLE DE PLANO =====
+  const plano = localStorage.getItem("rf_plano") || "free";
+
+  // Módulos BLOQUEADOS no plano core (9.90)
+  const paginasBloqueadas = [
+    "registro-despesas.html",
+    "despesas-registradas.html",
+    "acompanhamento-pagamentos.html",
+    "agendamentos.html",
+    "calculadora.html",
+    "resumo.html",
+    "manutencao.html"
+  ];
+
+  if(plano === "core" && paginasBloqueadas.includes(paginaAtual)){
+    alert("Este recurso faz parte do plano avançado.");
+    location.replace("planos.html");
+  }
+
+})();
